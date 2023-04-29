@@ -1,4 +1,5 @@
 import ListGroup from "./components/ListGroup";
+import ChildrenCom from "./components/ChildrenCom";
 
 function App() {
   const items = [
@@ -15,11 +16,13 @@ function App() {
   };
   return (
     <div>
-      <ListGroup
+      {/* <ListGroup
         items={items}
         heading="Citis"
         selectItemFunction={selectItem}
-      />
+      /> */}
+
+      <ChildrenCom>Hello World2</ChildrenCom>
     </div>
   );
 }
