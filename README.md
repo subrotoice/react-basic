@@ -94,5 +94,6 @@ _You can use it for table also_
 
 </details>
 
-[![Link Test](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+[![Link Test](https://img.shields.io/badge/fine-Tune.svg?style=flat-square)](https://edeves.com)
+
 [edeves](https://edeves.com)
