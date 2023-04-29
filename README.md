@@ -1,6 +1,4 @@
-# Thanks Mosh
-
-# TypeScript Interface
+## TypeScript Interface
 
 TypeScript Interface: Say types of porps element
 
@@ -19,34 +17,31 @@ const Button = ({ children, onClick, color }: Props) => {
     </button>
   );
 };
+
+// App.js
+const selectItem = (item) => {
+  console.log(item);
+};
+return (
+  <div>
+    <Button color="primary" onClick={onClick}>
+      My Button
+    </Button>
+  </div>
+);
 ```
 
 ## Installation
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
 
-```
+```bash
 pip install foobar
 ```
 
-## Usage
-
-```javascript
-import foobar
-
-# returns 'words'
-foobar.pluralize('word')
-
-# returns 'geese'
-foobar.pluralize('goose')
-
-# returns 'phenomenon'
-foobar.singularize('phenomenaaaa')
-```
-
-```python
-s = "Python syntax highlighting"
-print s
+```php
+$s = "Python syntax highlighting";
+echo "Value: " . $s;
 ```
 
 ```
@@ -54,13 +49,8 @@ No language indicated, so no syntax highlighting.
 But let's throw in a <b>tag</b>.
 ```
 
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first
-to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
-
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[EDEVES.COM](https://edeves.com)
+
+### Thanks Mosh
