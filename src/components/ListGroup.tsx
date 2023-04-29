@@ -1,31 +1,27 @@
 import { MouseEvent, useState } from "react";
 
-function ListGroup() {
-  const items = [
-    "Ney York",
-    "London",
-    "San Frincisco",
-    "Pais",
-    "Dhaka",
-    "Delhi",
-  ];
+function ListGroup(props) {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const handelClick = (event: MouseEvent) => console.log(event);
 
   return (
     <>
-      <h1>List</h1>
-      {items.length === 0 && <p>No Item found</p>}
+      <h1>{props.heading}</h1>
+      {props.items.length === 0 && <p>No Item found</p>}
       <ul className="list-group">
-        {items.map((item, index) => (
+        {props.items.map((item, index) => (
           <li
             key={item}
+            // conditional rendering
             className={
               selectedIndex == index
                 ? "list-group-item active"
                 : "list-group-item"
             }
-            onClick={() => setSelectedIndex(index)}
+            onClick={() => {
+              setSelectedIndex(index);
+              props.selectItemFunction(item); // Function defination comes from App.js but argument pass from here to App.js
+            }}
           >
             {item}
           </li>
