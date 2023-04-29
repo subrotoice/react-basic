@@ -1,8 +1,25 @@
 # Thanks Mosh
 
-# Foobar
+# TypeScript Interface
 
-Foobar is a Python library for dealing with word pluralization.
+TypeScript Interface: Say types of porps element
+
+```javascript
+// TypeScript Interface: Say types of porps element
+interface Props {
+  children: string;
+  color: string;
+  onClick: () => void;
+}
+// Destructing Props
+const Button = ({ children, onClick, color }: Props) => {
+  return (
+    <button type="button" className={"btn btn-" + color} onClick={onClick}>
+      {children}
+    </button>
+  );
+};
+```
 
 ## Installation
 
@@ -25,11 +42,6 @@ foobar.pluralize('goose')
 
 # returns 'phenomenon'
 foobar.singularize('phenomenaaaa')
-```
-
-```javascript
-var s = "JavaScript syntax highlighting";
-alert(s);
 ```
 
 ```python
