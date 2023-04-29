@@ -1,3 +1,5 @@
+[ReactJs Gist]('https://gist.github.com/subrotoice/98eb2fcbcef23c733cd36e0575c2e37c')
+
 ## TypeScript Interface
 
 **TypeScript Interface: Say types of porps element**
@@ -80,12 +82,14 @@ Inline-style:
 </dl>
 
 <details>
-<summary>My top languages</summary>
+<summary>Collapsed section with Table</summary>
 
 | Rank | Languages  |
 | ---: | ---------- |
 |    1 | Javascript |
 |    2 | Python     |
 |    3 | SQL        |
+
+_You can use it for table also_
 
 </details>
