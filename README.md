@@ -61,10 +61,31 @@ Bullet lists nested within numbered list:
 2. vegetables
    - carrot
    - broccoli
+   - [edeves](https://edeves.com)
 
-> Markdown uses email-style
+> blockquoting: Markdown uses email-style
 > characters for blockquoting.
 >
 > Multiple paragraphs need to be prepended individually.
 
-### Thanks Mosh
+Inline-style:
+![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+
+<dl>
+  <dt>Definition list</dt>
+  <dd>Is something people use sometimes.</dd>
+
+  <dt>Markdown in HTML</dt>
+  <dd>Does *not* work **very** well. Use HTML <em>tags</em>.</dd>
+</dl>
+
+<details>
+<summary>My top languages</summary>
+
+| Rank | Languages  |
+| ---: | ---------- |
+|    1 | Javascript |
+|    2 | Python     |
+|    3 | SQL        |
+
+</details>
