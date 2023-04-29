@@ -27,6 +27,21 @@ foobar.pluralize('goose')
 foobar.singularize('phenomenaaaa')
 ```
 
+```javascript
+var s = "JavaScript syntax highlighting";
+alert(s);
+```
+
+```python
+s = "Python syntax highlighting"
+print s
+```
+
+```
+No language indicated, so no syntax highlighting.
+But let's throw in a <b>tag</b>.
+```
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first
