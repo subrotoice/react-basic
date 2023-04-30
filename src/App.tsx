@@ -25,21 +25,21 @@ function App() {
   return (
     <div>
       {/* here onClose is Props(Argu), not event like onClick */}
-      {alertVisible && (
+      {/* {alertVisible && (
         <Alert onClose={() => setAlertVisibility(false)}>
           Text Comes from App.tsx
         </Alert>
       )}
-      <Button onClick={() => setAlertVisibility(true)}>Show</Button>
+      <Button onClick={() => setAlertVisibility(true)}>Show</Button> */}
       {/* <Button color="danger" onClick={onClick}> // Here Just call by function
         Show
       </Button> */}
       {/* <ChildrenCom>Hello World2</ChildrenCom> */}
-      {/* <ListGroup
+      <ListGroup
         items={items}
         heading="Citis"
         selectItemFunction={selectItem}
-      /> */}
+      />
     </div>
   );
 }

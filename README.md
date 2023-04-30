@@ -4,7 +4,7 @@
 
 # Basic's of butliding Component
 
-**_TypeScript Interface & Button: _**<br />
+**TypeScript Interface & Button**<br />
 Say types of porps element | Outside the component function<br />
 
 ```javascript
@@ -144,6 +144,27 @@ function ListGroup(props: Props) {
 }
 
 export default ListGroup;
+```
+
+# Styling Components -----
+
+**Vanilla CSS**
+
+```javascript
+// ListGroup.tsx
+import "./ListGroup.css";
+// ListGroup.css
+.list-group {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+```
+
+**CSS Modules**
+
+```javascript
+
 ```
 
 ## Installation
