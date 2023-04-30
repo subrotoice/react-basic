@@ -1,6 +1,12 @@
 import { MouseEvent, useState } from "react";
 
-function ListGroup(props) {
+interface Props {
+  items: string[];
+  heading: string;
+  selectItemFunction: (item: string) => void;
+}
+
+function ListGroup(props: Props) {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const handelClick = (event: MouseEvent) => console.log(event);
 
