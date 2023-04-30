@@ -161,10 +161,32 @@ import "./ListGroup.css";
 }
 ```
 
+**Inline CSS**
+
+```javascript
+<ul style={{ backgroundColor: "red", color: "white" }}>
+```
+
 **CSS Modules**
 
 ```javascript
+// in ListGroup.module.css, module spelling should be careful
+.listGroup { // .listGroup is an object
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  background-color: bisque;
+}
 
+// in LIstGroup.tsx
+import styles from "./ListGroup.module.css";
+
+// acccess css, NO " " here
+<ul className={styles.listGroup}>
+// Apply Multiple class to a html tag
+<ul className={[styles.listGroup, styles.container].join(" ")}>
 ```
 
 ## Installation
