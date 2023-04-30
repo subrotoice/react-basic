@@ -1,6 +1,7 @@
 # TypeScript and Vite and React Basic
 
 [ReactJs Gist Subroto](https://gist.github.com/subrotoice/98eb2fcbcef23c733cd36e0575c2e37c)
+
 #Basic's of butliding Component
 
 **TypeScript Interface & Button: Say types of porps element | Outside the component function**
