@@ -1,4 +1,4 @@
-[ReactJs Gist Subroto](https://gist.github.com/subrotoice/98eb2fcbcef23c733cd36e0575c2e37c)
+[ReactJs Gist Subroto](https://gist.github.com/subrotoice/98eb2fcbcef23c733cd36e0575c2e37c){:target="\_blank" rel="noopener"}
 
 # TypeScript and Vite
 
