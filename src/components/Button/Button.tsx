@@ -1,4 +1,5 @@
 import React, { Children } from "react";
+import styles from "./Button.module.css";
 
 // TypeScript Interface: Say types of porps element
 interface Props {
@@ -11,7 +12,7 @@ const Button = ({ children, onClick, color = "primary" }: Props) => {
   return (
     <button
       type="button"
-      className={"btn btn-" + color}
+      className={[styles.btn, styles.btnPrimary].join(" ")}
       onClick={() => onClick(children)} // Function defination comes from App.js but argument pass from here to App.js
     >
       {children}

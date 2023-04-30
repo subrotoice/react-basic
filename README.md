@@ -8,7 +8,7 @@
 Say types of porps element | Outside the component function<br />
 
 ```javascript
-// TypeScript Interface: Say types of porps element
+// TypeScript Interface: To define Shape of Props
 interface Props {
   children: string;
   color?: "Primary" | "Sedondary" | "Danger"; // ? For Optional, Outside this value you can not set
@@ -161,17 +161,12 @@ import "./ListGroup.css";
 }
 ```
 
-**Inline CSS**
-
-```javascript
-<ul style={{ backgroundColor: "red", color: "white" }}>
-```
-
 **CSS Modules**
 
-```javascript
+```css
 // in ListGroup.module.css, module spelling should be careful
-.listGroup { // .listGroup is an object
+.listGroup {
+  // .listGroup is an object
   list-style: none;
   margin: 0;
   padding: 0;
@@ -179,14 +174,35 @@ import "./ListGroup.css";
 .container {
   background-color: bisque;
 }
+```
 
-// in LIstGroup.tsx
-import styles from "./ListGroup.module.css";
+```html
+// in LIstGroup.tsx import styles from "./ListGroup.module.css"; // acccess css,
+NO " " here
+<ul className="{styles.listGroup}">
+  // Apply Multiple class to a html tag <ul className={[styles.listGroup,
+  styles.container].join(" ")}>
+</ul>
+```
 
-// acccess css, NO " " here
-<ul className={styles.listGroup}>
-// Apply Multiple class to a html tag
-<ul className={[styles.listGroup, styles.container].join(" ")}>
+**Inline CSS**
+
+```html
+<ul style={{ backgroundColor: "red", color: "white" }}>
+```
+
+**Adding Icons** <br />
+In terminal run
+
+```bash
+npm i react-icons@4.7.1
+```
+
+```javascript
+// Bs first means Bootstrap, https://react-icons.github.io/react-icons
+import { BsFillCalendarFill } from "react-icons/bs";
+<BsFillCalendarFill />;
+<BsFillCalendarFill color="red" size="40" />;
 ```
 
 ## Installation

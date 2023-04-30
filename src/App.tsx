@@ -1,8 +1,10 @@
-import ListGroup from "./components/ListGroup";
+import ListGroup from "./components/ListGroup/ListGroup";
 import ChildrenCom from "./components/ChildrenCom";
-import Button from "./components/Button";
+import Button from "./components/Button/Button";
 import Alert from "./components/Alert";
 import { useState } from "react";
+import { BsFillCalendarFill } from "react-icons/bs";
+import Like from "./components/Like";
 
 function App() {
   const items = [
@@ -24,6 +26,13 @@ function App() {
   };
   return (
     <div>
+      <Like
+        onClick={() => {
+          // onClick is Props
+          console.log("Clicked");
+        }}
+      />
+      <BsFillCalendarFill color="red" size="40" />
       {/* here onClose is Props(Argu), not event like onClick */}
       {/* {alertVisible && (
         <Alert onClose={() => setAlertVisibility(false)}>
@@ -40,6 +49,7 @@ function App() {
         heading="Citis"
         selectItemFunction={selectItem}
       />
+      <Button onClick={() => {}}>Submit</Button>
     </div>
   );
 }
