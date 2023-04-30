@@ -4,7 +4,9 @@
 
 #Basic's of butliding Component
 
-**TypeScript Interface & Button: Say types of porps element | Outside the component function**
+**TypeScript Interface & Button: **
+Say types of porps element | Outside the component function
+-Say types of porps element | Outside the component function
 
 ```javascript
 // TypeScript Interface: Say types of porps element
