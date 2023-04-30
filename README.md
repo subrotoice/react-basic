@@ -1,7 +1,4 @@
-[ReactJs Gist Subroto]('https://gist.github.com/subrotoice/98eb2fcbcef23c733cd36e0575c2e37c')
-22
-[edeves](https://edeves.com)
-00 -[edeves](https://edeves.com)
+[ReactJs Gist Subroto](https://gist.github.com/subrotoice/98eb2fcbcef23c733cd36e0575c2e37c)
 
 # TypeScript and Vite
 
