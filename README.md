@@ -2,11 +2,10 @@
 
 [ReactJs Gist Subroto](https://gist.github.com/subrotoice/98eb2fcbcef23c733cd36e0575c2e37c)
 
-#Basic's of butliding Component
+# Basic's of butliding Component
 
-**TypeScript Interface & Button: **<br />
+**_TypeScript Interface & Button: _**<br />
 Say types of porps element | Outside the component function<br />
--Say types of porps element | Outside the component function
 
 ```javascript
 // TypeScript Interface: Say types of porps element
