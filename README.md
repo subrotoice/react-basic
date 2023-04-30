@@ -1,11 +1,9 @@
-[ReactJs Gist Subroto](https://gist.github.com/subrotoice/98eb2fcbcef23c733cd36e0575c2e37c){:target="\_blank"}
-[Stackoverflow The Key](https://stackoverflow.blog/2021/03/31/the-key-copy-paste/){:target="\_blank" rel="noopener"}
+# TypeScript and Vite and React Basic
 
-# TypeScript and Vite
+[ReactJs Gist Subroto](https://gist.github.com/subrotoice/98eb2fcbcef23c733cd36e0575c2e37c)
+#Basic's of butliding Component
 
-## TypeScript Interface & Button ------
-
-**TypeScript Interface: Say types of porps element**
+**TypeScript Interface & Button: Say types of porps element | Outside the component function**
 
 ```javascript
 // TypeScript Interface: Say types of porps element
@@ -40,9 +38,7 @@ return (
 );
 ```
 
-## Alert ------
-
-**TypeScript Interface: Say types of porps element**
+**Alert: here onClose is Props(Argu), not event like onClick**
 
 ```javascript
 interface Props {
@@ -76,7 +72,7 @@ const Alert = ({ children, onClose }: Props) => {
 }
 ```
 
-## Button ------
+**Button: With Default & Optional & Limited Argument**
 
 ```javascript
 import React, { Children } from "react";
@@ -84,11 +80,11 @@ import React, { Children } from "react";
 // TypeScript Interface: Say types of porps element
 interface Props {
   children: string;
-  color?: "Primary" | "secondary" | "danger"; // ? For Optional, Outside this value you can not set
+  color?: "primary" | "secondary" | "danger"; // ? For Optional, Outside this value you can not set
   onClick: (children: string) => void;
 }
 // Destructing Props
-const Button = ({ children, onClick, color }: Props) => {
+const Button = ({ children, onClick, color = "primary" }: Props) => {
   return (
     <button
       type="button"

@@ -30,9 +30,7 @@ function App() {
           Text Comes from App.tsx
         </Alert>
       )}
-      <Button color="danger" onClick={() => setAlertVisibility(true)}>
-        Show
-      </Button>
+      <Button onClick={() => setAlertVisibility(true)}>Show</Button>
       {/* <Button color="danger" onClick={onClick}> // Here Just call by function
         Show
       </Button> */}
