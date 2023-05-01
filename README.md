@@ -1,6 +1,7 @@
 # TypeScript and Vite and React Basic
 
 [ReactJs Gist Subroto](https://gist.github.com/subrotoice/98eb2fcbcef23c733cd36e0575c2e37c)
+[Lucy Theme](https://vscodethemes.com/e/juliettepretot.lucy-vscode/lucy?language=javascript)
 
 # Basic's of butliding Component
 
@@ -205,7 +206,113 @@ import { BsFillCalendarFill } from "react-icons/bs";
 <BsFillCalendarFill color="red" size="40" />;
 ```
 
-## Installation
+**Some React State Good Practice**
+
+```javascript
+const [firsName, setFirstName] = useState("");
+const [lastName, setLastName] = useState("");
+// It's better to group related state variable inside an object
+const [person, setPerson] = useState({
+  firsName: "",
+  lastName: "",
+});
+```
+
+**Updating Object State**
+
+```javascript
+const [drink, setDrink] = useState({
+  title: "Ram",
+  price: 5,
+});
+const handelClick = () => {
+  // System 1
+  const newDrink = {
+    title: "Ram",
+    price: 6,
+  };
+  // System 2: Spread ... operator Making new object so { }, Copy all property of an object and change(because same poperty) some part, it my be combine if new poperty, same for Array
+  const newDrink = {
+    ...drink,
+    price: 8,
+  };
+  setDrink(newDrink);
+  // System 3: Best
+  setDrink({ ...drink, price: 9 });
+};
+
+// Updating Nested Object
+const [drink, setDrink] = useState({
+  title: "Ram",
+  price: 5,
+  alcoholBottol: {
+    nip: 250,
+    pide: 500,
+    full: 750,
+  },
+});
+const handelClick = () => {
+  setDrink({ ...drink, alcoholBottol: { ...drink.alcoholBottol, full: 1000 } });
+};
+
+// **Updating Array**
+const [mod, setMood] = useState(["Happy", "Angry"]);
+const handelClick = () => {
+  // Add
+  setMood([...mod, "Joy"]);
+  // Delete
+  setMood(mod.filter((mod) => mod !== "Happy"));
+  // Update: If mod!=Happy return mod itself
+  setMood(mod.map((mod) => (mod === "Happy" ? "Happyness" : mod)));
+};
+
+<button onClick={handelClick}>Click</button> {mod.join(" ")}
+```
+
+```javascript
+// **Updating Array of Objects**
+const [bugs, setBug] = useState([
+  { id: 1, title: "Bug 1", fixed: false },
+  { id: 2, title: "Bug 2", fixed: false },
+]);
+const handelClick = () => {
+  setBug(bugs.map((bug) => (bug.id === 1 ? { ...bug, fixed: true } : bug)));
+};
+<button onClick={handelClick}>Click</button>{" "}
+{bugs.map((bug) => (<p key={bug.id}> {bug.id} {bug.title} {bug.fixed ? "Fixed" : "New"} </p>))}
+```
+
+```javascript
+// **Sharing State between Components**
+// App.js
+const [cartItems, setCartItems] = useState(["Product 1", "Product 2"]);
+<NavBar cartItemsCount={cartItems.length} />
+<Cart cartItems={cartItems} onClear={() => setCartItems([])} />
+// NavBar.tsx
+interface Props {
+  cartItemsCount: number;
+}
+const NavBar = ({ cartItemsCount }: Props) => {
+  return <>Items: {cartItemsCount}</>;
+};
+// Cart.tsx
+interface Props {
+  cartItems: string[];
+  onClear: () => void;
+}
+const Cart = ({ cartItems, onClear }: Props) => {
+  return (
+    <>
+      {cartItems.map((cartItem, indexa) => (
+        <p key={indexa}>{cartItem}</p>
+      ))}
+      <button onClick={onClear}>Clear</button>
+    </>
+  );
+};
+```
+
+## Demo Content ------------------
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
 
