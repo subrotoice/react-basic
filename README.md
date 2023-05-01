@@ -206,7 +206,7 @@ import { BsFillCalendarFill } from "react-icons/bs";
 <BsFillCalendarFill color="red" size="40" />;
 ```
 
-**Some React State Good Practice**
+### React-State Good Practice
 
 ```javascript
 const [firsName, setFirstName] = useState("");
