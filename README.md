@@ -206,7 +206,7 @@ import { BsFillCalendarFill } from "react-icons/bs";
 <BsFillCalendarFill color="red" size="40" />;
 ```
 
-### React-State Good Practice
+### React-State Good Practice --------
 
 ```javascript
 const [firsName, setFirstName] = useState("");
@@ -310,6 +310,38 @@ const Cart = ({ cartItems, onClear }: Props) => {
     </>
   );
 };
+```
+
+```javascript
+// **Expandable**
+interface Props {
+  children: string;
+  maxChars?: number;
+}
+
+// Very smart coding
+const ExpandableText = ({ children, maxChars = 100 }: Props) => {
+  const [showMore, setShowMore] = useState(true);
+  // if less character then return direct without button
+  if (children.length < 10) return <>{children}</>;
+  const text = showMore ? children.slice(0, maxChars) + "..." : children; // Finialize text first, if we keep text in state then there were unnecessary re-rener
+  return (
+    <div>
+      {text}
+      <button
+        onClick={() => {
+          setShowMore(!showMore);
+        }}
+      >
+        {showMore ? "More" : "Less"} //show less or more on state
+      </button>
+    </div>
+  );
+};
+// App.js
+<ExpandableText maxChars={30}>
+  Lorem ipsum, dolor sit amet consectet
+</ExpandableText>;
 ```
 
 ## Demo Content ------------------
