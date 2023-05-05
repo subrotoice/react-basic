@@ -560,7 +560,7 @@ const Form = () => {
 
 **Schema based Validation with Zod**
 Resolver is schema based validation library for Zod
-[Watch Video] (https://codewithmosh.com/courses/ultimate-react-part1/lectures/45915806)
+[Watch-Video] (https://codewithmosh.com/courses/ultimate-react-part1/lectures/45915806)
 [Zod](https://zod.dev)
 
 ```bash
@@ -628,7 +628,7 @@ const Form = () => {
 };
 ```
 
-**Mini Project use of Zod, useFrom, zodResolver**
+**Mini Project use of Zod, useFrom, zodResolver ------**
 
 ```javascript
 // ExpensesForm.tsx
