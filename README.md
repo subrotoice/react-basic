@@ -344,6 +344,288 @@ const ExpandableText = ({ children, maxChars = 100 }: Props) => {
 </ExpandableText>;
 ```
 
+## Building Forms ----------------
+
+**Track input element using useRef Hook, Best Performance: no rerender needed**
+
+```javascript
+const Form = () => {
+  // HTMLInputElement for ts, useRef could be reference any thing ie. button, input
+  const nameRaf = useRef < HTMLInputElement > null; // null common practice
+  const ageRaf = useRef < HTMLInputElement > null;
+  const person = { name: "", age: 0 };
+  // event type FormEvent and it need to import
+  const submitHandeler = (event: FormEvent) => {
+    event.preventDefault();
+    // Think in a way: just input er reference ene ekhane kaj korce
+    if (nameRaf.current !== null) person.name = nameRaf.current.value;
+    // parseInt convet string to integer: typeScript
+    if (ageRaf.current !== null) person.age = parseInt(ageRaf.current.value);
+    console.log(person); // Sending data server need object
+  };
+  return (
+    <form onSubmit={submitHandeler}>
+      <div className="mb-3">
+        <label htmlFor="name" className="form-label">
+          Name
+        </label>
+        <input
+          ref={nameRaf}
+          type="text"
+          name="name"
+          id="name"
+          className="form-control"
+        />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="age" className="form-label">
+          Age
+        </label>
+        <input
+          ref={ageRaf}
+          type="number"
+          name="age"
+          id="age"
+          className="form-control"
+        />
+      </div>
+      <button type="submit" className="btn btn-primary">
+        Submit
+      </button>
+    </form>
+  );
+};
+```
+
+**Track input element using useState Hook, Normally people do, onChange=reRender**
+
+```javascript
+const Form = () => {
+  // console.log("Render"); Lots of rerender needed, Most of the cases not needed, if application big then create problem
+  const [person, setPerson] = useState({ name: "", age: "" }); // here age:0, it keep input field always 0
+  // event type FormEvent and it need to import
+  const submitHandeler = (event: FormEvent) => {
+    event.preventDefault();
+    console.log(person);
+  };
+  return (
+    <form onSubmit={submitHandeler}>
+      <div className="mb-3">
+        <label htmlFor="name" className="form-label">
+          Name
+        </label>
+        <input
+          onChange={(event) =>
+            setPerson({ ...person, name: event.target.value })
+          }
+          value={person.name}
+          type="text"
+          name="name"
+          id="name"
+          className="form-control"
+        />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="age" className="form-label">
+          Age
+        </label>
+        <input
+          onChange={(event) => {
+            setPerson({ ...person, age: event.target.value });
+          }}
+          value={person.age}
+          type="number"
+          name="age"
+          id="age"
+          className="form-control"
+        />
+      </div>
+      <button type="submit" className="btn btn-primary">
+        Submit
+      </button>
+    </form>
+  );
+};
+```
+
+**Managing Forms with React Hook Form**
+[Watch Video](https://codewithmosh.com/courses/ultimate-react-part1/lectures/45915810)
+[TypeScript Data type get] (https://prnt.sc/WsBn3-rT06cS)
+
+```bash
+npm i react-hook-form@7.43
+```
+
+```javascript
+const Form = () => {
+  // it use useRef so no rerendering
+  const { register, handleSubmit } = useForm(); // destructring form, const from = useForm();
+  const onSubmit = (data: FieldValues) => {
+    console.log(data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="mb-3">
+        <label htmlFor="name" className="form-label">
+          Name
+        </label>
+        <input
+          {...register("name")}
+          type="text"
+          name="name"
+          id="name"
+          className="form-control"
+        />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="age" className="form-label">
+          Age
+        </label>
+        <input
+          {...register("age")}
+          type="number"
+          name="age"
+          id="age"
+          className="form-control"
+        />
+      </div>
+      <button type="submit" className="btn btn-primary">
+        Submit
+      </button>
+    </form>
+  );
+};
+```
+
+**Data Validation(React Hook Form)**
+
+```javascript
+interface FormData {
+  // Give this data type in useForm hook, You can ignore this in this type of manual validation
+  name: string;
+  age: number;
+}
+const Form = () => {
+  //   const { register, handleSubmit, formState } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }, // Nested destrusting
+  } = useForm<FormData>();
+  console.log(errors);
+  const onSubmit = (data: FieldValues) => {
+    console.log(data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="mb-3">
+        <label htmlFor="name" className="form-label">
+          Name
+        </label>
+        <input
+          {...register("name", { required: true, minLength: 3 })}
+          type="text"
+          name="name"
+          id="name"
+          className="form-control"
+        />
+        {errors.name?.type === "required" && ( // ? is optional chaining in JavaScript, if there is not name error in that time we try to access type then might be an error
+          <p className="text-danger">Name field must be required</p>
+        )}
+        {errors.name?.type === "minLength" && (
+          <p className="text-danger">Name field need minimum 3 characters</p>
+        )}
+      </div>
+      <div className="mb-3">
+        <label htmlFor="age" className="form-label">
+          Age
+        </label>
+        <input
+          {...register("age")}
+          type="number"
+          name="age"
+          id="age"
+          className="form-control"
+        />
+      </div>
+      <button type="submit" className="btn btn-primary">
+        Submit
+      </button>
+    </form>
+  );
+};
+```
+
+**Schema based Validation with Zod**
+Resolver is schema based validation library for Zod
+[Watch Video] (https://codewithmosh.com/courses/ultimate-react-part1/lectures/45915806)
+
+```bash
+npm i zod@3.20.6
+npm i @hookform/resolvers@2.9.11
+```
+
+```javascript
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z.object({
+  name: z.string().min(3, { message: "Name must be at least 3 characters" }),
+  age: z
+    .number({ invalid_type_error: "Age field must be required" }) // passing object
+    .min(18, { message: "Age must be at least 18" }),
+});
+
+type FormData = z.infer<typeof schema>; // creating interface type here
+
+const Form = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }, // Nested destrusting
+  } = useForm < FormData > { resolver: zodResolver(schema) }; //
+
+  const onSubmit = (data: FieldValues) => {
+    console.log(data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="mb-3">
+        <label htmlFor="name" className="form-label">
+          Name
+        </label>
+        <input
+          {...register("name")}
+          type="text"
+          name="name"
+          id="name"
+          className="form-control"
+        />
+        {errors.name && <p className="text-danger">{errors.name.message}</p>}
+      </div>
+      <div className="mb-3">
+        <label htmlFor="age" className="form-label">
+          Age
+        </label>
+        <input
+          {...register("age", { valueAsNumber: true })}
+          type="number"
+          name="age"
+          id="age"
+          className="form-control"
+        />
+        {errors.age && <p className="text-danger">{errors.age.message}</p>}
+      </div>
+      <button type="submit" className="btn btn-primary">
+        Submit
+      </button>
+    </form>
+  );
+};
+```
+
 ## Demo Content ------------------
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.

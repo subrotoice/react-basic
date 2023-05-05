@@ -9,6 +9,9 @@ import Message from "./components/Message";
 import NavBar from "./components/NavBar";
 import Cart from "./components/Cart";
 import ExpandableText from "./components/ExpandableText";
+import "bootstrap/dist/css/bootstrap.css";
+import "./index.css";
+import Form from "./components/Form";
 
 function App() {
   const items = [
@@ -33,7 +36,8 @@ function App() {
   };
   return (
     <>
-      <ExpandableText maxChars={30}>
+      <Form />
+      {/* <ExpandableText maxChars={30}>
         Lorem ipsum, dolor sit amet consectetur adipisicing elit. Mollitia
         exercitationem tempora illum nemo quae labore praesentium rerum odit
         voluptas. Est, saepe repudiandae nulla totam culpa quod sit error eius
@@ -45,7 +49,7 @@ function App() {
         odit, fuga magni soluta? Ex iste dolorem ullam nesciunt! Dolor laborum
         rerum, modi, aspernatur expedita, dignissimos inventore tempore ad
         reiciendis itaque maiores?
-      </ExpandableText>
+      </ExpandableText> */}
       {/* <NavBar cartItemsCount={cartItems.length} />
       <Cart cartItems={cartItems} onClear={() => setCartItems([])} /> */}
       {/* <button onClick={handelClick}>Click</button>{" "}
