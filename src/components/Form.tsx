@@ -1,46 +1,57 @@
 import React, { FormEvent, useRef, useState } from "react";
+import { useForm, FieldValues } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z.object({
+  name: z.string().min(3, { message: "Name must be at least 3 characters" }),
+  age: z
+    .number({ invalid_type_error: "Age field must be required" })
+    .min(18, { message: "Age must be at least 18" }),
+});
+
+type FormData = z.infer<typeof schema>; // creating interface type here
 
 const Form = () => {
-  // console.log("Render"); Lots of rerender needed, Most of the cases not needed, if application big then create problem
-  const [person, setPerson] = useState({ name: "", age: "" }); // here age:0, it keep input field always 0
-  // event type FormEvent and it need to import
-  const submitHandeler = (event: FormEvent) => {
-    event.preventDefault();
-    console.log(person);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid }, // Nested destrusting
+  } = useForm<FormData>({ resolver: zodResolver(schema) }); //
+
+  const onSubmit = (data: FieldValues) => {
+    console.log(data);
   };
+
   return (
-    <form onSubmit={submitHandeler}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-3">
         <label htmlFor="name" className="form-label">
           Name
         </label>
         <input
-          onChange={(event) =>
-            setPerson({ ...person, name: event.target.value })
-          }
-          value={person.name}
+          {...register("name")}
           type="text"
           name="name"
           id="name"
           className="form-control"
         />
+        {errors.name && <p className="text-danger">{errors.name.message}</p>}
       </div>
       <div className="mb-3">
         <label htmlFor="age" className="form-label">
           Age
         </label>
         <input
-          onChange={(event) => {
-            setPerson({ ...person, age: event.target.value });
-          }}
-          value={person.age}
+          {...register("age", { valueAsNumber: true })}
           type="number"
-          name="age"
+          name="age" // name is unnecessary, you can not left as name=""
           id="age"
           className="form-control"
         />
+        {errors.age && <p className="text-danger">{errors.age.message}</p>}
       </div>
-      <button type="submit" className="btn btn-primary">
+      <button disabled={!isValid} type="submit" className="btn btn-primary">
         Submit
       </button>
     </form>

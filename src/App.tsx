@@ -12,6 +12,9 @@ import ExpandableText from "./components/ExpandableText";
 import "bootstrap/dist/css/bootstrap.css";
 import "./index.css";
 import Form from "./components/Form";
+import ExpenseList from "./components/expense-tracker/components/ExpenseList";
+import ExpenseFilter from "./components/expense-tracker/components/ExpenseFilter";
+import ExpensesForm from "./components/expense-tracker/components/ExpensesForm";
 
 function App() {
   const items = [
@@ -24,6 +27,16 @@ function App() {
   ];
   const [alertVisible, setAlertVisibility] = useState(false);
   const [cartItems, setCartItems] = useState(["Product 1", "Product 2"]);
+  const [selectedCategory, setSelectedCatagory] = useState("");
+  const [expenses, setExpenses] = useState([
+    { id: 1, description: "aaa", amount: 5, category: "Utilities" },
+    { id: 2, description: "bbb", amount: 5, category: "Utilities" },
+    { id: 3, description: "ccc", amount: 5, category: "Utilities" },
+    { id: 4, description: "ddd", amount: 5, category: "Utilities" },
+    { id: 5, description: "eee", amount: 10, category: "Groceries" },
+    { id: 6, description: "fff", amount: 15, category: "Entertainment" },
+    { id: 7, description: "ggg", amount: 1, category: "Utilities" },
+  ]);
 
   // const handelClick = () => {
   //   setBug(bugs.map((bug) => (bug.id === 1 ? { ...bug, fixed: true } : bug)));
@@ -34,9 +47,36 @@ function App() {
   const selectItem = (item: string) => {
     console.log(item);
   };
+  // it could be keep in a State in stade of local variable, but it completely unnecessary, because we get it form calculation
+  const visibleExpenses =
+    selectedCategory !== ""
+      ? expenses.filter((e) => e.category === selectedCategory)
+      : expenses;
+
   return (
     <>
-      <Form />
+      <div className="mb-5">
+        <ExpensesForm
+          onSubmit={(newExpense) => {
+            setExpenses([
+              ...expenses,
+              { ...newExpense, id: expenses.length + 1 },
+            ]);
+          }}
+        />
+      </div>
+      <div className="mb-3">
+        <ExpenseFilter
+          onSelectCategory={(category) => setSelectedCatagory(category)}
+        />
+      </div>
+      <ExpenseList
+        expenses={visibleExpenses}
+        onDelete={(id) => {
+          setExpenses(expenses.filter((e) => e.id != id));
+        }}
+      />
+      {/* <Form /> */}
       {/* <ExpandableText maxChars={30}>
         Lorem ipsum, dolor sit amet consectetur adipisicing elit. Mollitia
         exercitationem tempora illum nemo quae labore praesentium rerum odit
