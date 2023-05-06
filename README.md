@@ -6,7 +6,9 @@
 # Basic's of butliding Component
 
 **TypeScript Interface & Button**<br />
-Say types of porps element | Outside the component function<br />
+Saying types of porps element, it outside the component function<br />
+Props: Passing data from parent to child using <br />
+Callback Function: Passing data from child to Parent
 
 ```javascript
 // TypeScript Interface: To define Shape of Props
