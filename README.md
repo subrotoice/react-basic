@@ -953,7 +953,7 @@ useEffect(() => {
 }, []); // Only first time run
 
 
-// Showing Loader untill data come from server.
+// Showing Loader untill data come from server. .
 ........
 const [isLoading, setLoading] = useState(false);
 

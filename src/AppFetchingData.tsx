@@ -23,7 +23,7 @@ const AppFetchingData = () => {
         setLoading(false);
       })
       .catch((err) => {
-        if (err instanceof CanceledError) return; // If no data here then
+        if (err instanceof CanceledError) return; // If no data here then.
         setError(err.message);
         setLoading(false);
       });
