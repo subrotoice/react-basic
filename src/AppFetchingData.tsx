@@ -29,7 +29,7 @@ const AppFetchingData = () => {
       });
 
     return () => controller.abort();
-  }, []); // Only first time run
+  }, []);
   return (
     <div>
       {error && <p className="text-danger">{error}</p>}
