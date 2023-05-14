@@ -3,7 +3,7 @@
 [ReactJs Gist Subroto](https://gist.github.com/subrotoice/98eb2fcbcef23c733cd36e0575c2e37c)
 [Lucy Theme](https://vscodethemes.com/e/juliettepretot.lucy-vscode/lucy?language=javascript)
 
-#  Ch-1: Basic's of butliding Component
+# Ch-1: Basic's of butliding Component
 
 **TypeScript Interface & Button**<br />
 Saying types of porps element, it outside the component function<br />
@@ -346,7 +346,7 @@ const ExpandableText = ({ children, maxChars = 100 }: Props) => {
 </ExpandableText>;
 ```
 
-#  Ch-3: Building Forms ----------------
+# Ch-3: Building Forms ----------------
 
 **Track input element using useRef Hook, Best Performance: no rerender needed**
 
@@ -951,6 +951,36 @@ useEffect(() => {
 
   return () => controller.abort();
 }, []); // Only first time run
+
+
+// Showing Loader untill data come from server
+........
+const [isLoading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    const controller = new AbortController();
+    axios
+      .get<User[]>("https://jsonplaceholder.typicode.com/users", {
+        signal: controller.signal,
+      })
+      .then((res) => {
+        setUsers(res.data);
+        setLoading(false); // after result come
+      })
+      .catch((err) => {
+        if (err instanceof CanceledError) return; // If no data here then
+        setError(err.message);
+        setLoading(false); // after result come
+      });
+
+    return () => controller.abort();
+  }, []); // Only first time run
+  return (
+    <div>
+      {error && <p className="text-danger">{error}</p>}
+      {isLoading && <div className="spinner-border"></div>}
+      .......................
 ```
 
 ## Demo Content ------------------
