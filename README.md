@@ -869,6 +869,88 @@ function App() {
 export default App;
 ```
 
+# Ch-4: Connecting to the Backend
+
+```bash
+// Fetching Data useing fetch(), axios
+npm i axios@1.3.4
+```
+
+```javascript
+// Fetching Data, Without TypeScript
+import React from "react";
+import axios from "axios";
+import { useState, useEffect } from "react";
+
+const AppFetchingData = () => {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    Promise: An object that holds the eventual result or failure of an asynchronous(long running) operation. All promise have a method called then(), catch() for errors
+    axios
+      .get("https://jsonplaceholder.typicode.com/users") // return a Promise
+      .then((res) => setUsers(res.data));
+  }, []); // Only first time run
+  return (
+    <div>
+      <ul>
+        {users.map((user) => (
+          <li>{user.name}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+// **********Typescript Version with Error Handeling***********
+// Typescript Version with Error Handeling
+import React from "react";
+import axios from "axios";
+import "bootstrap/dist/css/bootstrap.css";
+import { useState, useEffect } from "react";
+interface User {
+  id: number;
+  name: string;
+}
+const AppFetchingData = () => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    axios
+      .get<User[]>("https://jsonplaceholder.typicode.com/xusers")
+      .then((res) => setUsers(res.data))
+      .catch((err) => setError(err.message));
+  }, []); // Only first time run
+  return (
+    <div>
+      {error && <p className="text-danger">{error}</p>}
+      <ul>
+        {users.map((user) => (
+          <li>{user.name}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+// Cancelling Fetch request: If user navegate wawy form the page
+// https://codewithmosh.com/courses/ultimate-react-part1/lectures/45915908
+useEffect(() => {
+  const controller = new AbortController(); // build in class in modern browser, if go away of the page
+  axios
+    .get<User[]>("https://jsonplaceholder.typicode.com/users", {
+      signal: controller.signal,
+    })
+    .then((res) => setUsers(res.data))
+    .catch((err) => {
+      if (err instanceof CanceledError) return; // If close brouser then it works
+      setError(err.message);
+    });
+
+  return () => controller.abort();
+}, []); // Only first time run
+```
+
 ## Demo Content ------------------
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
