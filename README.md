@@ -3,10 +3,12 @@
 [ReactJs Gist Subroto](https://gist.github.com/subrotoice/98eb2fcbcef23c733cd36e0575c2e37c)
 [Lucy Theme](https://vscodethemes.com/e/juliettepretot.lucy-vscode/lucy?language=javascript)
 
-# Basic's of butliding Component
+#  Ch-1: Basic's of butliding Component
 
 **TypeScript Interface & Button**<br />
-Say types of porps element | Outside the component function<br />
+Saying types of porps element, it outside the component function<br />
+Props: Passing data from parent to child using <br />
+Callback Function: Passing data from child to Parent
 
 ```javascript
 // TypeScript Interface: To define Shape of Props
@@ -147,7 +149,7 @@ function ListGroup(props: Props) {
 export default ListGroup;
 ```
 
-# Styling Components -----
+# Ch-2: Styling Components -----
 
 **Vanilla CSS**
 
@@ -344,7 +346,7 @@ const ExpandableText = ({ children, maxChars = 100 }: Props) => {
 </ExpandableText>;
 ```
 
-## Building Forms ----------------
+#  Ch-3: Building Forms ----------------
 
 **Track input element using useRef Hook, Best Performance: no rerender needed**
 
