@@ -1,8 +1,15 @@
 # TypeScript and Vite and React Basic
 
-[ReactJs Gist Subroto](https://gist.github.com/subrotoice/98eb2fcbcef23c733cd36e0575c2e37c)
+[ReactJs Gist Subroto](https://gist.github.com/subrotoice/98eb2fcbcef23c733cd36e0575c2e37c) <br>
 [Lucy Theme](https://vscodethemes.com/e/juliettepretot.lucy-vscode/lucy?language=javascript)
-
+```javascript
+// in main.tsx change component to see different implentation
+<React.StrictMode>
+  <AppFetchingData />
+  {/* <App2 />
+  <App /> */}
+</React.StrictMode>
+ ```
 # Ch-1: Basic's of butliding Component
 
 **TypeScript Interface & Button**<br />
