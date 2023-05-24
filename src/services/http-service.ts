@@ -1,5 +1,10 @@
 import apiClient, { CanceledError } from "./api-client";
 // try to do some generic(common) approach
+
+interface Entity {
+  id: number;
+}
+
 class HttpService {
   endpoint: string;
   constructor(endpoint: string) {
@@ -15,17 +20,18 @@ class HttpService {
     return { request, cancel: () => controller.abort() }; // returning two values
   }
 
-  deleteUser(id: number) {
-    return apiClient.delete("users/" + id);
+  delete(id: number) {
+    return apiClient.delete(this.endpoint + "/" + id);
   }
 
-  createUser(user: User) {
-    return apiClient.post("users", user);
+  create<T>(entity: T) {
+    return apiClient.post(this.endpoint, entity);
   }
 
-  updateUser(user: User) {
-    return apiClient.patch("/users/" + user.id, user);
+  update<T extends Entity>(entity: T) {
+    return apiClient.patch(this.endpoint + "/" + entity.id, entity);
   }
 }
 
-export default new HttpService();
+const create = (endpoint: string) => new HttpService(endpoint);
+export default create;

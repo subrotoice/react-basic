@@ -14,7 +14,7 @@ const AppFetchingData = () => {
     setLoading(true);
     // It contains all methods for creating, Updateing, deleting user, so that App.js not not to warry abut data and can foucs on Markup and UI
     // receving two values as object, destructing here, one handel data another if browser close
-    const { request, cancel } = userService.getAllUsers();
+    const { request, cancel } = userService.getAll<User>();
     request
       .then((res) => {
         setUsers(res.data);
@@ -32,7 +32,7 @@ const AppFetchingData = () => {
   const deleteUser = (user: User) => {
     const originalUser = [...users]; // Store all users in another variable before delete
     setUsers(users.filter((u) => u.id != user.id));
-    userService.deleteUser(user.id).catch((err) => {
+    userService.delete(user.id).catch((err) => {
       setError(err.message);
       setUsers(originalUser); // If error occure then Get back to original user
     });
@@ -42,7 +42,7 @@ const AppFetchingData = () => {
     const newUser = { id: 0, name: "Subroto" };
     setUsers([newUser, ...users]); // later setUsers replace this id: 0 user and set id: 11 user, you can check with useEffect and consol.log
     userService
-      .createUser(newUser)
+      .create(newUser)
       .then(({ data: savedUser }) => {
         // it create code more readable
         setUsers([savedUser, ...users]); // It will replace previous one
@@ -57,7 +57,7 @@ const AppFetchingData = () => {
     const updatedUser = { ...user, name: user.name + "!" };
     setUsers(users.map((u) => (user.id == u.id ? updatedUser : u)));
     // patch/put() you can use depending on backend
-    userService.updateUser(user).catch((err) => {
+    userService.update(user).catch((err) => {
       setError(err.message);
       setUsers(originalUser);
     });
