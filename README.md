@@ -1217,7 +1217,217 @@ Componets is responsibe for returning markup and handeling interaction at high l
 ```javascript
 // here folder serices is about data not about UI
 // Transfer code from appFetchingData to api-client.ts
+// This codding is absolutly fine no need to create hook, but if we need to recreate same code then we can use it accross various component
+// Custom hook: Hook just a function, Return a object
+// It contains all methods for creating, Updateing, deleting user, so that App.js not not to warry abut data and can foucs on Markup and UI
+// receving two values as object, destructing here, one handel data another if browser close
 ```
+
+**_ App.tsx -> useUsers(hook)-> (api-client -> user-service -> http-service) _**
+
+<details>
+<summary>1. AppFetchingData.tsx</summary>
+
+```javascript
+import "bootstrap/dist/css/bootstrap.css";
+import userService, { User } from "./services/user-service";
+import useUsers from "./hooks/useUsers";
+
+const AppFetchingData = () => {
+  // This codding is absolutly fine no need to create hook, but if we need to recreate same code then we can use it accross various component
+  // Custom hook: Hook just a function, Return a object
+  const { users, error, isLoading, setUsers, setError } = useUsers();
+  const deleteUser = (user: User) => {
+    const originalUser = [...users]; // Store all users in another variable before delete
+    setUsers(users.filter((u) => u.id != user.id));
+    userService.delete(user.id).catch((err) => {
+      setError(err.message);
+      setUsers(originalUser); // If error occure then Get back to original user
+    });
+  };
+  const addUser = () => {
+    const originalUser = [...users];
+    const newUser = { id: 0, name: "Subroto" };
+    setUsers([newUser, ...users]); // later setUsers replace this id: 0 user and set id: 11 user, you can check with useEffect and consol.log
+    userService
+      .create(newUser)
+      .then(({ data: savedUser }) => {
+        // it create code more readable
+        setUsers([savedUser, ...users]); // It will replace previous one
+      })
+      .catch((err) => {
+        setError(err.message);
+        setUsers(originalUser);
+      });
+  };
+  const updateUser = (user: User) => {
+    const originalUser = [...users];
+    const updatedUser = { ...user, name: user.name + "!" };
+    setUsers(users.map((u) => (user.id == u.id ? updatedUser : u)));
+    // patch/put() you can use depending on backend
+    userService.update(user).catch((err) => {
+      setError(err.message);
+      setUsers(originalUser);
+    });
+  };
+
+  return (
+    <div>
+      {error && <p className="text-danger">{error}</p>}
+      {isLoading && <div className="spinner-border"></div>}
+      <button className="btn btn-primary my-3" onClick={addUser}>
+        Add
+      </button>
+      <ul className="list-group">
+        {users.map((user) => (
+          <li
+            key={user.id}
+            className="list-group-item d-flex justify-content-between"
+          >
+            {user.name}
+            <div>
+              <button
+                className="btn btn-outline-secondary mx-1"
+                onClick={() => updateUser(user)}
+              >
+                Update
+              </button>
+              <button
+                className="btn btn-outline-danger"
+                onClick={() => deleteUser(user)} // passing user
+              >
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+```
+
+</details>
+
+<details>
+<summary>2. useUsers.ts (hook)</summary>
+
+```javascript
+import { useEffect, useState } from "react";
+import userService, { User } from "../services/user-service";
+import { CanceledError } from "../services/api-client";
+
+const useUsers = () => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [error, setError] = useState("");
+  const [isLoading, setLoading] = useState(false);
+
+  // for first time data loda using useEffect
+  useEffect(() => {
+    setLoading(true);
+    // It contains all methods for creating, Updateing, deleting user, so that App.js not not to warry abut data and can foucs on Markup and UI
+    // receving two values as object, destructing here, one handel data another if browser close
+    const { request, cancel } = userService.getAll<User>();
+    request
+      .then((res) => {
+        setUsers(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (err instanceof CanceledError) return; // If no data here then.
+        setError(err.message);
+        setLoading(false);
+      });
+
+    return () => cancel();
+  }, []);
+  // hook is just a function, have a return values, Reuren state variable so that it can reuse
+  // Return an object
+  return { users, error, isLoading, setUsers, setError };
+};
+
+export default useUsers;
+```
+
+</details>
+
+<details>
+<summary>3. api-client.ts</summary>
+
+```javascript
+import axios, { CanceledError } from "axios";
+
+export default axios.create({
+  baseURL: "https://jsonplaceholder.typicode.com",
+  //   headers: {
+  //     'api-key': '...' // Sometimes needed
+  //   }
+});
+
+export { CanceledError };
+```
+
+</details>
+
+<details>
+<summary>4. user-service.ts</summary>
+
+```javascript
+import create from "./http-service";
+
+// just add export to use multiple place
+export interface User {
+  id: number;
+  name: string;
+}
+
+export default create("/users"); // Only place to provide endpoint
+```
+
+</details>
+
+<details>
+<summary>5. http-service.ts</summary>
+
+```javascript
+import apiClient, { CanceledError } from "./api-client";
+// try to do some generic (common) approach
+interface Entity {
+  id: number;
+}
+class HttpService {
+  endpoint: string;
+  constructor(endpoint: string) {
+    this.endpoint = endpoint;
+  }
+  // Here is nothing about users
+  getAll<T>() {
+    const controller = new AbortController();
+    const request = apiClient.get<T[]>(this.endpoint, {
+      signal: controller.signal,
+    });
+
+    return { request, cancel: () => controller.abort() }; // returning two values
+  }
+
+  delete(id: number) {
+    return apiClient.delete(this.endpoint + "/" + id);
+  }
+
+  create<T>(entity: T) {
+    return apiClient.post(this.endpoint, entity);
+  }
+
+  update<T extends Entity>(entity: T) {
+    return apiClient.patch(this.endpoint + "/" + entity.id, entity);
+  }
+}
+
+const create = (endpoint: string) => new HttpService(endpoint);
+export default create;
+```
+
+</details>
 
 ## Demo Content ------------------
 

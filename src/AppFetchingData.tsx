@@ -1,34 +1,11 @@
-import React from "react";
 import "bootstrap/dist/css/bootstrap.css";
-import { useState, useEffect } from "react";
-import { CanceledError } from "./services/api-client";
 import userService, { User } from "./services/user-service";
+import useUsers from "./hooks/useUsers";
 
 const AppFetchingData = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [error, setError] = useState("");
-  const [isLoading, setLoading] = useState(false);
-
-  // for first time data loda using useEffect
-  useEffect(() => {
-    setLoading(true);
-    // It contains all methods for creating, Updateing, deleting user, so that App.js not not to warry abut data and can foucs on Markup and UI
-    // receving two values as object, destructing here, one handel data another if browser close
-    const { request, cancel } = userService.getAll<User>();
-    request
-      .then((res) => {
-        setUsers(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        if (err instanceof CanceledError) return; // If no data here then.
-        setError(err.message);
-        setLoading(false);
-      });
-
-    return () => cancel();
-  }, []);
-
+  // This codding is absolutly fine no need to create hook, but if we need to recreate same code then we can use it accross various component
+  // Custom hook: Hook just a function, Return a object
+  const { users, error, isLoading, setUsers, setError } = useUsers();
   const deleteUser = (user: User) => {
     const originalUser = [...users]; // Store all users in another variable before delete
     setUsers(users.filter((u) => u.id != user.id));
