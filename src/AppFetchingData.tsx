@@ -10,6 +10,7 @@ const AppFetchingData = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
+  const [test, setTest] = useState("My Name");
 
   // for first time data loda using useEffect
   useEffect(() => {
@@ -75,6 +76,7 @@ const AppFetchingData = () => {
         setUsers(originalUser);
       });
   };
+
   return (
     <div>
       {error && <p className="text-danger">{error}</p>}

@@ -59,8 +59,8 @@ function App() {
         <ExpensesForm
           onSubmit={(newExpense) => {
             setExpenses([
-              ...expenses,
               { ...newExpense, id: expenses.length + 1 },
+              ...expenses,
             ]);
           }}
         />
