@@ -1,25 +1,21 @@
 import React from "react";
-import axios, { CanceledError } from "axios";
 import "bootstrap/dist/css/bootstrap.css";
 import { useState, useEffect } from "react";
-interface User {
-  id: number;
-  name: string;
-}
+import { CanceledError } from "./services/api-client";
+import userService, { User } from "./services/user-service";
+
 const AppFetchingData = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
-  const [test, setTest] = useState("My Name");
 
   // for first time data loda using useEffect
   useEffect(() => {
     setLoading(true);
-    const controller = new AbortController();
-    axios
-      .get<User[]>("https://jsonplaceholder.typicode.com/users", {
-        signal: controller.signal,
-      })
+    // It contains all methods for creating, Updateing, deleting user, so that App.js not not to warry abut data and can foucs on Markup and UI
+    // receving two values as object, destructing here, one handel data another if browser close
+    const { request, cancel } = userService.getAllUsers();
+    request
       .then((res) => {
         setUsers(res.data);
         setLoading(false);
@@ -30,28 +26,23 @@ const AppFetchingData = () => {
         setLoading(false);
       });
 
-    return () => controller.abort();
+    return () => cancel();
   }, []);
 
   const deleteUser = (user: User) => {
     const originalUser = [...users]; // Store all users in another variable before delete
     setUsers(users.filter((u) => u.id != user.id));
-    axios
-      .delete("https://jsonplaceholder.typicode.com/users/" + user.id)
-      .catch((err) => {
-        setError(err.message);
-        setUsers(originalUser); // If error occure then Get back to original user
-      });
+    userService.deleteUser(user.id).catch((err) => {
+      setError(err.message);
+      setUsers(originalUser); // If error occure then Get back to original user
+    });
   };
   const addUser = () => {
     const originalUser = [...users];
     const newUser = { id: 0, name: "Subroto" };
     setUsers([newUser, ...users]); // later setUsers replace this id: 0 user and set id: 11 user, you can check with useEffect and consol.log
-    axios
-      .post("https://jsonplaceholder.typicode.com/users", newUser) // Payo
-      // .then((res) => {
-      //   setUsers([res.data, ...users]); // It will replace previous one
-      // }); we can do this by destructiring and renaming
+    userService
+      .createUser(newUser)
       .then(({ data: savedUser }) => {
         // it create code more readable
         setUsers([savedUser, ...users]); // It will replace previous one
@@ -66,15 +57,10 @@ const AppFetchingData = () => {
     const updatedUser = { ...user, name: user.name + "!" };
     setUsers(users.map((u) => (user.id == u.id ? updatedUser : u)));
     // patch/put() you can use depending on backend
-    axios
-      .patch(
-        "https://jsonplaceholder.typicode.com/users/" + user.id,
-        updatedUser
-      )
-      .catch((err) => {
-        setError(err.message);
-        setUsers(originalUser);
-      });
+    userService.updateUser(user).catch((err) => {
+      setError(err.message);
+      setUsers(originalUser);
+    });
   };
 
   return (

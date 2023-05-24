@@ -1205,6 +1205,20 @@ const AppFetchingData = () => {
 export default AppFetchingData;
 ```
 
+**_ Above code is enough to perform CRUD. But now we try to do some generick(common) approach, not for user _**
+
+14. Extracting a Reusable API Client, 15- Extracting the User Service, 16- Creating a Generic HTTP Service, 16- Creating a Generic HTTP Service
+    https://codewithmosh.com/courses/ultimate-react-part1/lectures/45915912
+
+**_ It is little bit high thought think _**
+**_ Here AppFetchingData is like App.js so we can not use it as data fetching _**
+Componets is responsibe for returning markup and handeling interaction at high level
+
+```javascript
+// here folder serices is about data not about UI
+// Transfer code from appFetchingData to api-client.ts
+```
+
 ## Demo Content ------------------
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
