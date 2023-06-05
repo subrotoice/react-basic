@@ -46,7 +46,7 @@ const selectItem = (item) => {
 return (
   <div>
     <Button color="primary" onClick={onClick}>
-      My Button
+      It's Children(Button)
     </Button>
   </div>
 );
@@ -1214,13 +1214,13 @@ const AppFetchingData = () => {
 export default AppFetchingData;
 ```
 
-**_ Above code is enough to perform CRUD. But now we try to do some generick(common) approach, not for user _**
+**Above code is enough to perform CRUD. But now we try to do some generick(common) approach, not for user**
 
 14. Extracting a Reusable API Client, 15- Extracting the User Service, 16- Creating a Generic HTTP Service, 16- Creating a Generic HTTP Service
     https://codewithmosh.com/courses/ultimate-react-part1/lectures/45915912
 
-**_ It is little bit high thought think _**
-**_ Here AppFetchingData is like App.js so we can not use it as data fetching _**
+**It is little bit high thought think**
+**Here AppFetchingData is like App.js so we can not use it as data fetching**
 Componets is responsibe for returning markup and handeling interaction at high level
 
 ```javascript
