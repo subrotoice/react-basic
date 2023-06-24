@@ -12,14 +12,26 @@
 </React.StrictMode>
 ```
 
-# Ch-1: Basic's of butliding Component
+# Ch-1: Butliding Component - React Basic
 
-**TypeScript Interface & Button**<br />
+**1.1 TypeScript Interface & Button**<br />
 Saying types of porps element, it outside the component function<br />
 Props: Passing data from parent to child using <br />
 Callback Function: Passing data from child to Parent
 
 ```javascript
+// App.js
+const selectItem = (item) => {
+  console.log(item);
+};
+return (
+  <div>
+    <Button color="primary" onClick={onClick}>
+      It's Children(Button)
+    </Button>
+  </div>
+);
+
 // in Button.js; TypeScript Interface: To define Shape of Props
 interface Props {
   children: string;
@@ -38,23 +50,21 @@ const Button = ({ children, onClick, color }: Props) => {
     </button>
   );
 };
-
-// App.js
-const selectItem = (item) => {
-  console.log(item);
-};
-return (
-  <div>
-    <Button color="primary" onClick={onClick}>
-      It's Children(Button)
-    </Button>
-  </div>
-);
 ```
 
 **Alert: here onClose is Props(Argu), not event like onClick**
 
 ```javascript
+// App.js,  here onClose is Props(Argu), not event like onClick
+{
+  alertVisible && (
+    <Alert onClose={() => setAlertVisibility(false)}>
+      Text Comes from App.tsx
+    </Alert>
+  );
+}
+
+// Alert.js
 interface Props {
   children: ReactNode;
   onClose: () => void;
@@ -75,15 +85,6 @@ const Alert = ({ children, onClose }: Props) => {
     </div>
   );
 };
-
-// App.js,  here onClose is Props(Argu), not event like onClick
-{
-  alertVisible && (
-    <Alert onClose={() => setAlertVisibility(false)}>
-      Text Comes from App.tsx
-    </Alert>
-  );
-}
 ```
 
 **Button: With Default & Optional & Limited Argument**
@@ -217,7 +218,7 @@ import { BsFillCalendarFill } from "react-icons/bs";
 <BsFillCalendarFill color="red" size="40" />;
 ```
 
-### React-State Good Practice --------
+# Ch-3: Managing Component State; React-State Good Practice --------
 
 ```javascript
 const [firsName, setFirstName] = useState("");
@@ -355,7 +356,7 @@ const ExpandableText = ({ children, maxChars = 100 }: Props) => {
 </ExpandableText>;
 ```
 
-# Ch-3: Building Forms ----------------
+# Ch-4: Building Forms ----------------
 
 **Track input element using useRef Hook, Best Performance: no rerender needed**
 
@@ -880,7 +881,7 @@ function App() {
 export default App;
 ```
 
-# Ch-4: Connecting to the Backend
+# Ch-5: Connecting to the Backend
 
 ```bash
 // Fetching Data useing fetch(), axios
