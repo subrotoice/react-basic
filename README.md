@@ -14,19 +14,34 @@
 
 # Ch-1: Butliding Component - React Basic
 
-**1.1 TypeScript Interface & Button**<br />
-Saying types of porps element, it outside the component function<br />
-Props: Passing data from parent to child using <br />
-Callback Function: Passing data from child to Parent
+**1.1 TypeScript Interface illustration using Button**<br />
+
+1. Interface: Saying types of porps element, it outside the component function<br />
+2. Props: Passing data from parent to child using <br />
+3. Callback Function: Passing data from child to Parent
 
 ```javascript
-// App.js
+// ABC Example
+<Person name="Goutom">Subroto</Person>;
+const Person = ({ name, children }) => {
+  // const Test = (props) => {  this could be use
+  return (
+    <div>
+      <h1>
+        {name} and {children} // or props.name, props.children
+      </h1>
+    </div>
+  );
+};
+
+// App.js in Button Example
 const selectItem = (item) => {
   console.log(item);
 };
 return (
   <div>
-    <Button color="primary" onClick={onClick}>
+  // onClick event e click korle onClick function props call hoy. Etake jeknon event handelar ke handel kora jai
+    <Button color="Primary" onClick={onClick}> { // color="Primary222", typescript error, but work }
       It's Children(Button)
     </Button>
   </div>
@@ -39,7 +54,7 @@ interface Props {
   onClick: () => void;
 }
 // Destructing Props
-const Button = ({ children, onClick, color }: Props) => {
+const Button = ({ children, onClick, color = "Primary"  }: Props) => {
   return (
     <button
       type="button"
@@ -50,71 +65,68 @@ const Button = ({ children, onClick, color }: Props) => {
     </button>
   );
 };
+
+// Another Example: Child to Parent Data transfer
+// App.js
+const onClickFunction = (data: string) => {
+  console.log("onClickFunction: " + data); // Data come from child
+};
+<Button onClick={onClickFunction}>Submit</Button>
+// Button.js
+interface Props {
+  name: string;
+  children: string;
+  country?: "Bangladesh" | "India" | "USA";
+  onClickTest: (data: string) => void;
+}
+<button onClick={() => onClickTest("subotoBiswas")}>Click Here</button>
+// onClick button er event, onClickTest Functional Props, Passing data using arraw function. if we use onClickTest("subrotoBiswas") function will directly call so use arraw function
 ```
 
 **Alert: here onClose is Props(Argu), not event like onClick**
 
 ```javascript
 // App.js,  here onClose is Props(Argu), not event like onClick
+const closeAlert = (data: string) => {
+  setAlertVisibility(false);
+  console.log(data);
+};
+
 {
   alertVisible && (
-    <Alert onClose={() => setAlertVisibility(false)}>
-      Text Comes from App.tsx
+    <Alert onClose={closeAlert} color="danger">
+      This is a primary alert—check it out!
     </Alert>
   );
 }
 
+<button type="button" className="btn btn-primary" onClick={() => setAlertVisibility(true)}>
+  Show
+</button>;
 // Alert.js
 interface Props {
-  children: ReactNode;
+  children: ReactNode; // chidren is ReactNode type
+  color?: "primary" | "success" | "danger";
   onClose: () => void;
 }
-const Alert = ({ children, onClose }: Props) => {
+const Alert = ({ children, onClose, color = "primary" }: Props) => {
   return (
     <div>
-      <div className="alert alert-primary alert-dismissible" role="alert">
+      <div className={`alert alert-${color} alert-dismissible`} role="alert">
         {children}
         <button
           type="button"
           className="btn-close"
           data-bs-dismiss="alert"
           aria-label="Close"
-          onClick={onClose}
+          onClick={() => onClose("Subroto Close")} // Passing arg from child
         ></button>
       </div>
     </div>
   );
-};
 ```
 
-**Button: With Default & Optional & Limited Argument**
-
-```javascript
-import React, { Children } from "react";
-
-// TypeScript Interface: Say types of porps element
-interface Props {
-  children: string;
-  color?: "primary" | "secondary" | "danger"; // ? For Optional, Outside this value you can not set
-  onClick: (children: string) => void;
-}
-// Destructing Props
-const Button = ({ children, onClick, color = "primary" }: Props) => {
-  return (
-    <button
-      type="button"
-      className={"btn btn-" + color}
-      onClick={() => onClick(children)} // Function defination comes from App.js but argument pass from here to App.js
-    >
-      {children}
-    </button>
-  );
-};
-
-export default Button;
-```
-
-## List Group ------
+**List Group: above two concept here with combination**
 
 ```javascript
 import { MouseEvent, useState } from "react";
@@ -157,6 +169,54 @@ function ListGroup(props: Props) {
 }
 
 export default ListGroup;
+```
+
+**List Group: Filter, Delete illustration**
+
+```javascript
+const [expenses, setExpenses] = useState([
+  { id: 1, description: "aaa", amount: 5, category: "Utilities" },
+  { id: 2, description: "bbb", amount: 5, category: "Goods" },
+  { id: 3, description: "ccc", amount: 5, category: "Entertainment" },
+]);
+// Filter: Without funciton
+{
+  expenses.map((e) => (
+    <button
+      onClick={() =>
+        setExpenses(expenses.filter((expense) => expense.id !== e.id))
+      }
+    >
+      {e.id}
+    </button>
+  ));
+}
+// Filter: With funciton
+const clickHandler = (e: number) => {
+  console.log(e);
+  setExpenses(expenses.filter((expense) => expense.id !== e));
+};
+
+{
+  expenses.map((e) => (
+    <button onClick={() => clickHandler(e.id)}>{e.id}</button>
+  ));
+}
+```
+
+**Like implementaion with react icon**
+
+```javascript
+const troggle = () => {
+  setLikeStatus(!likeStatus);
+};
+{
+  likeStatus == false ? (
+    <AiOutlineHeart color="green" size="40" onClick={troggle} />
+  ) : (
+    <AiFillHeart color="green" size="40" onClick={troggle} />
+  );
+}
 ```
 
 # Ch-2: Styling Components -----
