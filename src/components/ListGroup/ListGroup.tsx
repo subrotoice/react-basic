@@ -13,10 +13,17 @@ function ListGroup(props: Props) {
 
   return (
     <>
+      <ul className="list-group">
+        <li className="list-group-item">Cras justo odio</li>
+        <li className="list-group-item">Dapibus ac facilisis in</li>
+        <li className="list-group-item">Morbi leo risus</li>
+        <li className="list-group-item">Porta ac consectetur ac</li>
+        <li className="list-group-item">Vestibulum at eros</li>
+      </ul>
       <h1>{props.heading}</h1>
       {props.items.length === 0 && <p>No Item found</p>}
       <ul
-        className={[styles.listGroup, styles.container].join(" ")}
+        className={[styles.listGroup, styles.container, "list-group"].join(" ")}
         style={{ backgroundColor: "red", color: "white" }}
       >
         {props.items.map((item, index) => (

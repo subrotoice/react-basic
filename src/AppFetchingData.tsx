@@ -33,6 +33,10 @@ const AppFetchingData = () => {
     const originalUser = [...users];
     const updatedUser = { ...user, name: user.name + "!" };
     setUsers(users.map((u) => (user.id == u.id ? updatedUser : u)));
+    // axios.patch( // Direct axios
+    //   "https://jsonplaceholder.typicode.com/users/" + user.id,
+    //   updatedUser
+    // );
     // patch/put() you can use depending on backend
     userService.update(user).catch((err) => {
       setError(err.message);

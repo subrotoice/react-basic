@@ -15,6 +15,11 @@ import Form from "./components/Form";
 import ExpenseList from "./components/expense-tracker/components/ExpenseList";
 import ExpenseFilter from "./components/expense-tracker/components/ExpenseFilter";
 import ExpensesForm from "./components/expense-tracker/components/ExpensesForm";
+import Person from "./components/Perosn";
+import "./components/my-style.css";
+import { BsFillCalculatorFill, BsFillBadge4KFill } from "react-icons/bs";
+import { AiFillApple } from "react-icons/ai";
+import { AiFillHeart, AiTwotoneHeart, AiOutlineHeart } from "react-icons/ai";
 
 function App() {
   const items = [
@@ -28,6 +33,7 @@ function App() {
   const [alertVisible, setAlertVisibility] = useState(false);
   const [cartItems, setCartItems] = useState(["Product 1", "Product 2"]);
   const [selectedCategory, setSelectedCatagory] = useState("");
+  const [likeStatus, setLikeStatus] = useState(true);
   const [expenses, setExpenses] = useState([
     { id: 1, description: "aaa", amount: 5, category: "Utilities" },
     { id: 2, description: "bbb", amount: 5, category: "Utilities" },
@@ -41,20 +47,49 @@ function App() {
   // const handelClick = () => {
   //   setBug(bugs.map((bug) => (bug.id === 1 ? { ...bug, fixed: true } : bug)));
   // };
+
   const onClick = () => {
     setAlertVisibility(true);
   };
+
   const selectItem = (item: string) => {
-    console.log(item);
+    console.log("Your item name: " + item);
   };
+
   // it could be keep in a State in stade of local variable, but it completely unnecessary, because we get it form calculation
   const visibleExpenses =
     selectedCategory !== ""
       ? expenses.filter((e) => e.category === selectedCategory)
       : expenses;
+  const PersonFunction = (data: string) => {
+    console.log(data);
+  };
+
+  const onClickFunction = (data: string) => {
+    console.log("onClickFunction: " + data);
+  };
+
+  const closeAlert = (data: string) => {
+    setAlertVisibility(false);
+    console.log(data);
+  };
+
+  const clickHandler = (e: number) => {
+    console.log(e);
+    setExpenses(expenses.filter((expense) => expense.id !== e));
+  };
+  const troggle = () => {
+    setLikeStatus(!likeStatus);
+  };
 
   return (
     <>
+      {likeStatus == false ? (
+        <AiOutlineHeart color="green" size="40" onClick={troggle} />
+      ) : (
+        <AiFillHeart color="green" size="40" onClick={troggle} />
+      )}
+
       <div className="mb-5">
         <ExpensesForm
           onSubmit={(newExpense) => {
@@ -111,6 +146,18 @@ function App() {
       <BsFillCalendarFill color="red" size="40" /> */}
       {/* here onClose is Props(Argu), not event like onClick */}
       {/* {alertVisible && (
+        <Alert onClose={closeAlert} color="danger">
+          This is a primary alert—check it out!
+        </Alert>
+      )}
+      <button
+        type="button"
+        className="btn btn-primary"
+        onClick={() => setAlertVisibility(true)}
+      >
+        Show
+      </button> */}
+      {/* {alertVisible && (
         <Alert onClose={() => setAlertVisibility(false)}>
           Text Comes from App.tsx
         </Alert>
@@ -124,7 +171,16 @@ function App() {
         items={items}
         heading="Citis"
         selectItemFunction={selectItem}
+      /> */}
+      {/* <ListGroup
+        items={items}
+        heading="Citis"
+        selectItemFunction={selectItem}
       />
+      <Person name="Shipi" country="USA" onClickTest={PersonFunction}>
+        Subroto
+      </Person>
+      <Button onClick={onClickFunction}>Submit</Button>
       <Button onClick={() => {}}>Submit</Button> */}
     </>
   );

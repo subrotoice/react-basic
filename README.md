@@ -22,6 +22,7 @@
 
 ```javascript
 // ABC Example
+// Observation: Retunr er age hoy data er kaj, return er vitor hoy view er kaj
 <Person name="Goutom">Subroto</Person>;
 const Person = ({ name, children }) => {
   // const Test = (props) => {  this could be use
@@ -290,6 +291,44 @@ const [person, setPerson] = useState({
 });
 ```
 
+```javascript
+// Just Practice: Basic state update, and Nested update
+import React, { useState } from "react";
+
+const BackEndConnection = () => {
+  const [count, setCount] = useState(0);
+  const [person, setPerson] = useState({
+    name: "Subroto",
+    class: 1,
+    address: {
+      dist: "Kst",
+      country: "BD",
+    },
+  });
+  const changePerson = () => {
+    const newPerson = {
+      ...person,
+      class: 4,
+      address: { ...person.address, country: "Ind" },
+    };
+    setPerson(newPerson);
+  };
+  return (
+    <div>
+      {count}
+      <button onClick={() => setCount(count + 1)}>+</button>
+      <button onClick={() => setCount(count - 1)}>-</button>
+      {person.name}
+      {person.class}
+      {person.address.country}
+      <button onClick={changePerson}>Change</button>
+    </div>
+  );
+};
+
+export default BackEndConnection;
+```
+
 **Updating Object State**
 
 ```javascript
@@ -297,7 +336,7 @@ const [drink, setDrink] = useState({
   title: "Ram",
   price: 5,
 });
-const handelClick = () => {
+const handelClick = () => { // in this funcion differnet option is being illustrated
   // System 1
   const newDrink = {
     title: "Ram",

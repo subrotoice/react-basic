@@ -2,19 +2,20 @@ import React, { ReactNode } from "react";
 
 interface Props {
   children: ReactNode;
-  onClose: () => void;
+  color?: "primary" | "success" | "danger";
+  onClose: (data: string) => void;
 }
-const Alert = ({ children, onClose }: Props) => {
+const Alert = ({ children, onClose, color = "primary" }: Props) => {
   return (
     <div>
-      <div className="alert alert-primary alert-dismissible" role="alert">
+      <div className={`alert alert-${color} alert-dismissible`} role="alert">
         {children}
         <button
           type="button"
           className="btn-close"
           data-bs-dismiss="alert"
           aria-label="Close"
-          onClick={onClose}
+          onClick={() => onClose("Subroto Close")} // Passing arg from child
         ></button>
       </div>
     </div>

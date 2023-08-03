@@ -5,7 +5,7 @@ import styles from "./Button.module.css";
 interface Props {
   children: string;
   color?: "primary" | "secondary" | "danger"; // ? For Optional, Outside this value you can not set
-  onClick: (children: string) => void;
+  onClick: (data: string) => void;
 }
 // Destructing Props
 const Button = ({ children, onClick, color = "primary" }: Props) => {
@@ -13,7 +13,7 @@ const Button = ({ children, onClick, color = "primary" }: Props) => {
     <button
       type="button"
       className={[styles.btn, styles.btnPrimary].join(" ")}
-      onClick={() => onClick(children)} // Function defination comes from App.js but argument pass from here to App.js
+      onClick={() => onClick("Subroto")} // Function defination comes from App.js but argument pass from here to App.js
     >
       {children}
     </button>
