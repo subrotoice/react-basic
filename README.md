@@ -21,10 +21,13 @@
 3. Callback Function: Passing data from child to Parent
 
 ```javascript
-// ABC Example
-// Observation: Retunr er age hoy data er kaj, return er vitor hoy view er kaj
-<Person name="Goutom">Subroto</Person>;
-const Person = ({ name, children }) => {
+// Example 1: Parent to child data transer
+// ABC (Without typescript) | Observation: before retunr: handel Data, Inside return: handel Markeup
+// App.js
+<Person name="Goutom">Subroto</Person>; // Person.tsx | name=goutom, children=Subroto passing
+
+// Person.js
+const Person = ({ name, children }) => { // App.tsx
   // const Test = (props) => {  this could be use
   return (
     <div>
@@ -35,24 +38,25 @@ const Person = ({ name, children }) => {
   );
 };
 
-// App.js in Button Example
+
+// Example 2:
+// App.js
 const selectItem = (item) => {
   console.log(item);
 };
-return (
+return ( // onClick event e click korle onClick function props call hoy.
   <div>
-  // onClick event e click korle onClick function props call hoy. Etake jeknon event handelar ke handel kora jai
-    <Button color="Primary" onClick={onClick}> { // color="Primary222", typescript error, but work }
-      It's Children(Button)
+    <Button color="Primary" onClick={selectItem}> { // color="Primary222", typescript error, but work }
+      It is Children(Button)
     </Button>
   </div>
 );
 
-// in Button.js; TypeScript Interface: To define Shape of Props
-interface Props {
+// Button.js
+interface Props { // TypeScript Interface: To define Shape of Props | Outside Button function
   children: string;
   color?: "Primary" | "Sedondary" | "Danger"; // ? For Optional, Outside this value you can not set
-  onClick: () => void;
+  selectItem: (data: string) => void;
 }
 // Destructing Props
 const Button = ({ children, onClick, color = "Primary"  }: Props) => {
@@ -60,29 +64,39 @@ const Button = ({ children, onClick, color = "Primary"  }: Props) => {
     <button
       type="button"
       className={"btn btn-" + color}
-      onClick={() => onClick(children)} // Function defination comes from App.js but argument pass from here to App.js
+      // className={[styles.btn, styles.btnPrimary, "btn btn-" + color].join(" ")} // styles is css module
+      onClick={() => selectItem(children)} // Function defination comes from App.js but argument pass from here to App.js
     >
       {children}
     </button>
   );
 };
 
-// Another Example: Child to Parent Data transfer
+// Example 3 : Child to Parent Data transfer (Very Important) ---
 // App.js
-const onClickFunction = (data: string) => {
-  console.log("onClickFunction: " + data); // Data come from child
+const PersonFunction = (data: string) => {
+  console.log("PersonFunction " + data);
 };
-<Button onClick={onClickFunction}>Submit</Button>
-// Button.js
+<Person name="Shipi" country="USA" onClickTest={PersonFunction}> Subroto </Person> //No argument pass here,
+// or: in one line arraw function defination
+<Person name="Shipi" country="USA" onClickTest={(name)=>console.log(name)}> Subroto </Person> //No argument pass here,
+// 1. Function Defination - Argument Yes
+// 2. Component Use - Argument No
+// 3. Function Call from Child Component - Argument Yes
+
+// Person.js
 interface Props {
   name: string;
   children: string;
   country?: "Bangladesh" | "India" | "USA";
   onClickTest: (data: string) => void;
 }
-<button onClick={() => onClickTest("subotoBiswas")}>Click Here</button>
-// onClick button er event, onClickTest Functional Props, Passing data using arraw function. if we use onClickTest("subrotoBiswas") function will directly call so use arraw function
+<a onClick={() => onClickTest("Suboto Biswas")}>Click Here</a>
 ```
+
+NB: onClick button er event, onClickTest Functional Props, PersonFunction is function name; Passing data using arraw function. if we use onClickTest("subrotoBiswas") function will directly call so use arraw function
+
+- If you share data between two state then data lifted up to parent and then send to anoter children.
 
 **Alert: here onClose is Props(Argu), not event like onClick**
 
@@ -94,16 +108,13 @@ const closeAlert = (data: string) => {
 };
 
 {
-  alertVisible && (
-    <Alert onClose={closeAlert} color="danger">
+  alertVisible && ( // if alertVisibile is true then show
+    <Alert onClose={closeAlert} color="danger"> // Passing onClose, color and Children to Alert.tsx
       This is a primary alert—check it out!
-    </Alert>
+    </Alert> // here onClose is functional Props, closeAlert is function name | Here no need to pass argument, arg is only function defination and Children Component
   );
 }
 
-<button type="button" className="btn btn-primary" onClick={() => setAlertVisibility(true)}>
-  Show
-</button>;
 // Alert.js
 interface Props {
   children: ReactNode; // chidren is ReactNode type
@@ -127,15 +138,27 @@ const Alert = ({ children, onClose, color = "primary" }: Props) => {
   );
 ```
 
-**List Group: above two concept here with combination**
+**List Group: Above two concept here with combination (Passing data either way Parent to child and chield to Parent)**
 
 ```javascript
+// App.tsx
+const items = ["Ney York", "London", "San Frincisco", "Pais", "Dhaka", "Delhi"];
+const selectItemFunction = (item: string, index: number) => {
+  console.log(index + ": Your item name: " + item);
+};
+<ListGroup
+  items={items}
+  heading="Cities"
+  selectItemProps={selectItemFunction}
+/>;
+
+// ListGroup.tsx
 import { MouseEvent, useState } from "react";
 
 interface Props {
   items: string[];
   heading: string;
-  selectItemFunction: (item: string) => void;
+  selectItemFunctionalProps: (item: string, index: number) => void;
 }
 
 function ListGroup(props: Props) {
@@ -145,23 +168,21 @@ function ListGroup(props: Props) {
   return (
     <>
       <h1>{props.heading}</h1>
-      {props.items.length === 0 && <p>No Item found</p>}
       <ul className="list-group">
         {props.items.map((item, index) => (
           <li
-            key={item}
-            // conditional rendering
             className={
               selectedIndex == index
                 ? "list-group-item active"
                 : "list-group-item"
             }
+            key={index}
             onClick={() => {
+              props.selectItemFunctionalProps(item, index);
               setSelectedIndex(index);
-              props.selectItemFunction(item); // Function defination comes from App.js but argument pass from here to App.js
             }}
           >
-            {item}
+            {index + ": " + item}
           </li>
         ))}
       </ul>
@@ -220,13 +241,14 @@ const troggle = () => {
 }
 ```
 
-# Ch-2: Styling Components -----
+# Ch-4: Styling Components -----
 
-**Vanilla CSS**
+**4.1 Vanilla CSS**
 
 ```javascript
 // ListGroup.tsx
-import "./ListGroup.css";
+import "./ListGroup.css"; // import "./css/ListGroup.css";
+
 // ListGroup.css
 .list-group {
   list-style: none;
@@ -235,12 +257,23 @@ import "./ListGroup.css";
 }
 ```
 
-**CSS Modules**
+Conditional CSS:
+
+```javascript
+className={`list-group-item ${selectedUser == user.id && "active"}`}
+```
+
+**4.2 CSS Modules**
 
 ```css
-// in ListGroup.module.css, module spelling should be careful
+// App.tsx | .listGroup is an object
+import styles from "./ListGroup.module.css";
+<ul className={styles.listGroup}>
+<ul className={[styles.listGroup, styles.container].join(" ")}> // Apply Multiple class
+<div className={`${styles.container} ${isImportant && styles.important}`}>Content goes here</div> // Dynamic class names with CSS Modules
+
+// ListGroup.module.css | module spelling should be careful | .listGroup is an object
 .listGroup {
-  // .listGroup is an object
   list-style: none;
   margin: 0;
   padding: 0;
@@ -248,24 +281,28 @@ import "./ListGroup.css";
 .container {
   background-color: bisque;
 }
+
 ```
 
-```html
-// in LIstGroup.tsx import styles from "./ListGroup.module.css"; // acccess css,
-NO " " here
-<ul className="{styles.listGroup}">
-  // Apply Multiple class to a html tag <ul className={[styles.listGroup,
-  styles.container].join(" ")}>
-</ul>
+**4.3 Inline CSS**
+
+```javascript
+<ul style={{ backgroundColor: "red", color: "white" }}> // inside {} js object
+<p style={{ backgroundColor: "#e0e0e0", color: "white" }}>We are good</p>
+
+const dynamicStyle = {
+  backgroundColor: isImportant ? 'red' : 'lightgray',
+  padding: '10px',
+  border: '1px solid darkgray',
+};
+<div style={dynamicStyle}>
+  <p style={{ color: isImportant ? "Green" : "black", fontSize: "16px" }}>Dynamic styles!</p>
+</div>
+
+// Different property in React: backgroundColor, color, fontSize, padding, margin, border, borderRadius, textAlign, fontWeight, textTransform, textDecoration, boxShadow, display, flexDirection, justifyContent, alignItems, overflow, opacity, transition, zIndex
 ```
 
-**Inline CSS**
-
-```html
-<ul style={{ backgroundColor: "red", color: "white" }}>
-```
-
-**Adding Icons** <br />
+**4.4 Adding Icons** <br />
 In terminal run
 
 ```bash
@@ -273,60 +310,23 @@ npm i react-icons@4.7.1
 ```
 
 ```javascript
-// Bs first means Bootstrap, https://react-icons.github.io/react-icons
+// Bs: means Bootstrap, https://react-icons.github.io/react-icons
 import { BsFillCalendarFill } from "react-icons/bs";
 <BsFillCalendarFill />;
 <BsFillCalendarFill color="red" size="40" />;
 ```
 
-# Ch-3: Managing Component State; React-State Good Practice --------
+# Ch-5: Managing Component State | React-State Good Practice
 
 ```javascript
+// To avoid unnecessary rendring. It's better to group related state variable inside an object
 const [firsName, setFirstName] = useState("");
 const [lastName, setLastName] = useState("");
-// It's better to group related state variable inside an object
+
 const [person, setPerson] = useState({
   firsName: "",
   lastName: "",
 });
-```
-
-```javascript
-// Just Practice: Basic state update, and Nested update
-import React, { useState } from "react";
-
-const BackEndConnection = () => {
-  const [count, setCount] = useState(0);
-  const [person, setPerson] = useState({
-    name: "Subroto",
-    class: 1,
-    address: {
-      dist: "Kst",
-      country: "BD",
-    },
-  });
-  const changePerson = () => {
-    const newPerson = {
-      ...person,
-      class: 4,
-      address: { ...person.address, country: "Ind" },
-    };
-    setPerson(newPerson);
-  };
-  return (
-    <div>
-      {count}
-      <button onClick={() => setCount(count + 1)}>+</button>
-      <button onClick={() => setCount(count - 1)}>-</button>
-      {person.name}
-      {person.class}
-      {person.address.country}
-      <button onClick={changePerson}>Change</button>
-    </div>
-  );
-};
-
-export default BackEndConnection;
 ```
 
 **Updating Object State**
@@ -336,7 +336,8 @@ const [drink, setDrink] = useState({
   title: "Ram",
   price: 5,
 });
-const handelClick = () => { // in this funcion differnet option is being illustrated
+const handelClick = () => {
+  // in this funcion differnet option is being illustrated
   // System 1
   const newDrink = {
     title: "Ram",
@@ -365,23 +366,27 @@ const [drink, setDrink] = useState({
 const handelClick = () => {
   setDrink({ ...drink, alcoholBottol: { ...drink.alcoholBottol, full: 1000 } });
 };
+```
 
-// **Updating Array**
-const [mod, setMood] = useState(["Happy", "Angry"]);
+**Updating Array**
+
+```javascript
+const [mood, setMood] = useState(["Happy", "Angry"]);
 const handelClick = () => {
   // Add
-  setMood([...mod, "Joy"]);
+  setMood([...mood, "Joy"]);
   // Delete
-  setMood(mod.filter((mod) => mod !== "Happy"));
+  setMood(mood.filter((mod) => mood !== "Happy"));
   // Update: If mod!=Happy return mod itself
-  setMood(mod.map((mod) => (mod === "Happy" ? "Happyness" : mod)));
+  setMood(mood.map((mod) => (mood === "Happy" ? "Happyness" : mood)));
 };
 
 <button onClick={handelClick}>Click</button> {mod.join(" ")}
 ```
 
+**Best Practice: Updating Array of Objects**
+
 ```javascript
-// **Updating Array of Objects**
 const [bugs, setBug] = useState([
   { id: 1, title: "Bug 1", fixed: false },
   { id: 2, title: "Bug 2", fixed: false },
@@ -393,12 +398,18 @@ const handelClick = () => {
 {bugs.map((bug) => (<p key={bug.id}> {bug.id} {bug.title} {bug.fixed ? "Fixed" : "New"} </p>))}
 ```
 
+**Sharing State between Components**
+
 ```javascript
-// **Sharing State between Components**
 // App.js
 const [cartItems, setCartItems] = useState(["Product 1", "Product 2"]);
+const onAddFunction = (item: string) => {
+  setCartItems([...cartItems, item]);
+  console.log(item);
+};
 <NavBar cartItemsCount={cartItems.length} />
-<Cart cartItems={cartItems} onClear={() => setCartItems([])} />
+<Cart cartItems={cartItems} onClear={() => setCartItems([])} onAdd={onAddFunction} /> // No argument here
+
 // NavBar.tsx
 interface Props {
   cartItemsCount: number;
@@ -406,6 +417,7 @@ interface Props {
 const NavBar = ({ cartItemsCount }: Props) => {
   return <>Items: {cartItemsCount}</>;
 };
+
 // Cart.tsx
 interface Props {
   cartItems: string[];
@@ -418,10 +430,14 @@ const Cart = ({ cartItems, onClear }: Props) => {
         <p key={indexa}>{cartItem}</p>
       ))}
       <button onClick={onClear}>Clear</button>
+      <button className="btn btn-primary" onClick={() => props.onAdd("Product 3")}
+      >
     </>
   );
 };
 ```
+
+**Expandable Text Project**
 
 ```javascript
 // **Expandable**
@@ -434,7 +450,7 @@ interface Props {
 const ExpandableText = ({ children, maxChars = 100 }: Props) => {
   const [showMore, setShowMore] = useState(true);
   // if less character then return direct without button
-  if (children.length < 10) return <>{children}</>;
+  if (children.length < maxChars) return <>{children}</>;
   const text = showMore ? children.slice(0, maxChars) + "..." : children; // Finialize text first, if we keep text in state then there were unnecessary re-rener
   return (
     <div>
@@ -455,9 +471,10 @@ const ExpandableText = ({ children, maxChars = 100 }: Props) => {
 </ExpandableText>;
 ```
 
-# Ch-4: Building Forms ----------------
+# Ch-6: Building Forms ---
 
-**Track input element using useRef Hook, Best Performance: no rerender needed**
+**Form value may collected in Two way.**  
+**Way 1: useRef Hook**
 
 ```javascript
 const Form = () => {
@@ -508,7 +525,7 @@ const Form = () => {
 };
 ```
 
-**Track input element using useState Hook, Normally people do, onChange=reRender**
+**Way 2: useState Hook, Normally people do, onChange=reRender**
 
 ```javascript
 const Form = () => {
@@ -559,8 +576,11 @@ const Form = () => {
 };
 ```
 
-**Managing Forms with React Hook Form**
-[Watch Video](https://codewithmosh.com/courses/ultimate-react-part1/lectures/45915810)
+**React Hook Form: It use useRef so no rerendering**  
+Step1: Install, <br>
+Step2: const { register, handleSubmit } = useForm(), // Destructure react hook functions from react form hook  
+Step3: Input tag should look like this: <input {...register("name")} /><br>
+[Watch Video](https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915810)
 [TypeScript Data type get] (https://prnt.sc/WsBn3-rT06cS)
 
 ```bash
@@ -569,7 +589,6 @@ npm i react-hook-form@7.43
 
 ```javascript
 const Form = () => {
-  // it use useRef so no rerendering
   const { register, handleSubmit } = useForm(); // destructring form, const from = useForm();
   const onSubmit = (data: FieldValues) => {
     console.log(data);
@@ -584,7 +603,6 @@ const Form = () => {
         <input
           {...register("name")}
           type="text"
-          name="name"
           id="name"
           className="form-control"
         />
@@ -596,7 +614,6 @@ const Form = () => {
         <input
           {...register("age")}
           type="number"
-          name="age"
           id="age"
           className="form-control"
         />
@@ -609,11 +626,14 @@ const Form = () => {
 };
 ```
 
-**Data Validation(React Hook Form)**
+**Data Validation (React Hook Form)**
+Step1: Previous Step + const { register, handleSubmit, formState: { errors }} = useForm<FormData>();  
+Step2: Input tag should look like this: <input {...register("name", { required: true, minLength: 3 })}/><br>
+Step3: {errors.name?.type === "required" && (HTML Tag)} // Display error
 
 ```javascript
 interface FormData {
-  // Give this data type in useForm hook, You can ignore this in this type of manual validation
+  // here interface create for autoComplete, you may ignore: https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915813, 4:55
   name: string;
   age: number;
 }
@@ -624,7 +644,7 @@ const Form = () => {
     handleSubmit,
     formState: { errors }, // Nested destrusting
   } = useForm<FormData>();
-  console.log(errors);
+  console.log(errors); // if error occured then onSubmit kaj korbe na ty outside onSubmit e error dekhano hoyeche
   const onSubmit = (data: FieldValues) => {
     console.log(data);
   };
@@ -669,9 +689,10 @@ const Form = () => {
 };
 ```
 
-**Schema based Validation with Zod**
+**[Most Difficult] Schema based Validation with Zod (All validation rule in one Place)**
+Zod is a TypeScript-first schema declaration and validation library. It's commonly used for defining and validating data shapes, such as API payloads, form data, or any structured data in your application.
 Resolver is schema based validation library for Zod
-[Watch-Video] (https://codewithmosh.com/courses/ultimate-react-part1/lectures/45915806)
+[Watch-Video] (https://members.codewithmosh.com/courses/ultimate-react-part1/lectures/45915806)
 [Zod](https://zod.dev)
 
 ```bash
@@ -679,7 +700,67 @@ npm i zod@3.20.6
 npm i @hookform/resolvers@2.9.11
 ```
 
+**Code Structure: React-hook-form, Zod, ZodResolver**
+
 ```javascript
+// Code Structure Start
+//Step 1: Importing library
+import { FieldValues, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+// Step2: Interface block start
+// Schema Defination and Interface(type) extract
+const schema = z.object({
+  description: z
+    .string()
+    .min(3, { message: "Description must be at least 3 characters." }),
+  amount: z
+    .number({ invalid_type_error: "Amount field must be required." })
+    .min(0.01, { message: "Minimum amount is .01" })
+    .max(10000, { message: "Maximum amount is 10000" }),
+  category: z.string(),
+});
+type ExpensesFormDataTest = z.infer<typeof schema>; //type extracting
+// Interface block End
+
+//Step3: send data from child to parent using Function
+interface Props {
+  onAdd: (data: ExpensesFormDataTest) => void;
+}
+
+// Step 4: Combain React hook form with Zod using zodRelosver
+const ExpenseFormTest = ({ onAdd }: Props) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm < ExpensesFormDataTest > { resolver: zodResolver(schema) };
+
+  const onSubmit = (data: ExpensesFormDataTest) => {
+    // console.log(data);
+    onAdd(data);
+  };
+  // Setp 5: Final form and {...register()}
+  return (
+    <>
+      <form className="my-3" action="" onSubmit={handleSubmit(onSubmit)}>
+        <input
+          {...register("description")} // no need to use name=""
+        />
+        {errors.description && <p>{errors.description.message}</p>}
+        <button
+          disabled={!isValid} // Disable
+        >
+          Add
+        </button>
+      </form>
+    </>
+  );
+};
+// Structure End
+
+// Final Code
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -689,7 +770,7 @@ const schema = z.object({
     .number({ invalid_type_error: "Age field must be required" })
     .min(18, { message: "Age must be at least 18" }),
 });
-
+// extract the inferred type: type is similar like interface
 type FormData = z.infer<typeof schema>; // creating interface type here
 
 const Form = () => {
@@ -739,9 +820,127 @@ const Form = () => {
 };
 ```
 
-**Mini Project use of Zod, useFrom, zodResolver ------**
+**Expense Tracker Project: Using Zod, useFrom, zodResolver (upper 3 combination)**
 
 ```javascript
+// App.js
+function App() {
+  const [selectedCategory, setSelectedCatagory] = useState("");
+  const [expenses, setExpenses] = useState([
+    { id: 1, description: "aaa", amount: 5, category: "Utilities" },
+    { id: 2, description: "bbb", amount: 5, category: "Groceries" },
+    { id: 3, description: "ccc", amount: 5, category: "Utilities" },
+    { id: 4, description: "ddd", amount: 5, category: "Utilities" },
+    { id: 5, description: "eee", amount: 10, category: "Groceries" },
+    { id: 6, description: "fff", amount: 15, category: "Entertainment" },
+    { id: 7, description: "ggg", amount: 1, category: "Utilities" },
+  ]);
+
+  // It could be keep in a State in stade of local variable, but it completely unnecessary, because we get it form calculation
+  const visibleExpenses =
+    selectedCategory !== ""
+      ? expenses.filter((e) => e.category === selectedCategory)
+      : expenses;
+  const PersonFunction = (data: string) => {
+    console.log(data);
+  };
+
+  // Also you can use this: add expense using last id decending order
+  const onAdd = (expense: {
+    // interface type
+    description: string,
+    amount: number,
+    category: string,
+  }) => {
+    setExpenses([{ id: expenses[0].id + 1, ...expense }, ...expenses]);
+  };
+}
+return (
+  <>
+    <div className="mb-5">
+      <ExpensesForm
+        onSubmit={(newExpense) => {
+          // first array of object, then add id to from input
+          setExpenses([
+            ...expenses,
+            { ...newExpense, id: expenses.length + 1 },
+          ]);
+        }}
+      />
+    </div>
+    <div className="mb-3">
+      <ExpenseFilter
+        onSelectCategory={(category) => setSelectedCatagory(category)}
+      />
+    </div>
+    <ExpenseList
+      expenses={visibleExpenses}
+      onDelete={(id) => {
+        setExpenses(expenses.filter((e) => e.id != id));
+      }}
+    />
+  </>
+);
+
+// ExpenseList.tsx
+interface Expense {
+  id: number;
+  description: string;
+  amount: number;
+  category: string;
+}
+interface Props {
+  expenses: Expense[];
+  onDelete: (id: number) => void;
+}
+const ExpenseList = ({ expenses, onDelete }: Props) => {
+  if (expenses.length === 0) return null;
+  return (
+    <div>
+      <table className="table table-bordered">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Category</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {expenses.map((expense) => (
+            <tr key={expense.id}>
+              <td>{expense.description}</td>
+              <td>{expense.amount}</td>
+              <td>{expense.category}</td>
+              <td>
+                <button
+                  className="btn btn-outline-danger"
+                  onClick={() => onDelete(expense.id)}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Total</td>
+            <td>
+              $
+              {expenses
+                .reduce((acc, expense) => expense.amount + acc, 0)
+                .toFixed(2)}
+            </td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  );
+};
+
 // ExpensesForm.tsx
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -749,6 +948,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import categories from "../categories";
 
 const schema = z.object({
+  // Think in this way: zod is nothing but inerface decleartion, & central control
   description: z
     .string()
     .min(3, { message: "Description should be at least 3 characters" })
@@ -837,67 +1037,7 @@ const ExpensesForm = ({ onSubmit }: Props) => {
   );
 };
 
-// ExpenseList.tsx
-interface Expense {
-  id: number;
-  description: string;
-  amount: number;
-  category: string;
-}
-interface Props {
-  expenses: Expense[];
-  onDelete: (id: number) => void;
-}
-const ExpenseList = ({ expenses, onDelete }: Props) => {
-  if (expenses.length === 0) return null;
-  return (
-    <div>
-      <table className="table table-bordered">
-        <thead>
-          <tr>
-            <th>Description</th>
-            <th>Amount</th>
-            <th>Category</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {expenses.map((expense) => (
-            <tr key={expense.id}>
-              <td>{expense.description}</td>
-              <td>{expense.amount}</td>
-              <td>{expense.category}</td>
-              <td>
-                <button
-                  className="btn btn-outline-danger"
-                  onClick={() => onDelete(expense.id)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td>Total</td>
-            <td>
-              $
-              {expenses
-                .reduce((acc, expense) => expense.amount + acc, 0)
-                .toFixed(2)}
-            </td>
-            <td></td>
-            <td></td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-  );
-};
-
 // ExpenseFilter.tsx
-import React from "react";
 import categories from "../categories";
 
 interface Props {
@@ -907,9 +1047,7 @@ const ExpenseFilter = ({ onSelectCategory }: Props) => {
   return (
     <div>
       <select
-        name=""
-        id=""
-        className="form-select"
+        className="form-select mb-3"
         onChange={(e) => onSelectCategory(e.target.value)}
       >
         <option value="">All Categories</option>
@@ -920,67 +1058,9 @@ const ExpenseFilter = ({ onSelectCategory }: Props) => {
     </div>
   );
 };
-
-// App.js
-import { useState } from "react";
-import ExpandableText from "./components/ExpandableText";
-import "bootstrap/dist/css/bootstrap.css";
-import "./index.css";
-import Form from "./components/Form";
-import ExpenseList from "./components/expense-tracker/components/ExpenseList";
-import ExpenseFilter from "./components/expense-tracker/components/ExpenseFilter";
-import ExpensesForm from "./components/expense-tracker/components/ExpensesForm";
-
-function App() {
-  const [alertVisible, setAlertVisibility] = useState(false);
-  const [selectedCategory, setSelectedCatagory] = useState("");
-  const [expenses, setExpenses] = useState([
-    { id: 1, description: "aaa", amount: 5, category: "Utilities" },
-    { id: 2, description: "bbb", amount: 5, category: "Utilities" },
-    { id: 3, description: "ccc", amount: 5, category: "Utilities" },
-    { id: 4, description: "ddd", amount: 5, category: "Utilities" },
-    { id: 5, description: "eee", amount: 10, category: "Groceries" },
-    { id: 6, description: "fff", amount: 15, category: "Entertainment" },
-    { id: 7, description: "ggg", amount: 1, category: "Utilities" },
-  ]);
-  // it could be keep in a State in stade of local variable, but it completely unnecessary, because we get it form calculation
-  const visibleExpenses =
-    selectedCategory !== ""
-      ? expenses.filter((e) => e.category === selectedCategory)
-      : expenses;
-
-  return (
-    <>
-      <div className="mb-5">
-        <ExpensesForm
-          onSubmit={(newExpense) => {
-            // first array of object, then add id to from input
-            setExpenses([
-              ...expenses,
-              { ...newExpense, id: expenses.length + 1 },
-            ]);
-          }}
-        />
-      </div>
-      <div className="mb-3">
-        <ExpenseFilter
-          onSelectCategory={(category) => setSelectedCatagory(category)}
-        />
-      </div>
-      <ExpenseList
-        expenses={visibleExpenses}
-        onDelete={(id) => {
-          setExpenses(expenses.filter((e) => e.id != id));
-        }}
-      />
-    </>
-  );
-}
-
-export default App;
 ```
 
-# Ch-5: Connecting to the Backend
+# Ch-7: Connecting to the Backend
 
 ```bash
 // Fetching Data useing fetch(), axios
@@ -988,36 +1068,31 @@ npm i axios@1.3.4
 ```
 
 ```javascript
-// Fetching Data, Without TypeScript
-import React from "react";
+// Axios CRUD
+// C: Add Users in Axios
+axios
+  .post("https://jsonplaceholder.typicode.com/users/", newUser) // API URL+Endpoing+Payload(newUser)
+  .then((res) => { // Success
+    console.log(res);
+  })
+  .catch((err) => { // Failed
+    console.log(err);
+  });
+// R: Read
+axios
+  .get("https://jsonplaceholder.typicode.com/users", {
+    signal: controller.signal,
+  }) // return a Promise
+  .then((res) => { Success })
+  .catch((err) => { Failed });
+// U: Update
+axios
+  .patch("https://jsonplaceholder.typicode.com/users/" + user.id, updatedUser)
+  .catch((err) => { Handel Only Filed If you do not want to handel success });
+// D: Delete User using Axios
+axios.delete("https://jsonplaceholder.typicode.com/users/" + user.id).catch((err) => {});
+
 import axios from "axios";
-import { useState, useEffect } from "react";
-
-const AppFetchingData = () => {
-  const [users, setUsers] = useState([]);
-
-  useEffect(() => {
-    Promise: An object that holds the eventual result or failure of an asynchronous(long running) operation. All promise have a method called then(), catch() for errors
-    axios
-      .get("https://jsonplaceholder.typicode.com/users") // return a Promise
-      .then((res) => setUsers(res.data));
-  }, []); // Only first time run
-  return (
-    <div>
-      <ul>
-        {users.map((user) => (
-          <li>{user.name}</li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-// **********Typescript Version with Error Handeling***********
-// Typescript Version with Error Handeling
-import React from "react";
-import axios from "axios";
-import "bootstrap/dist/css/bootstrap.css";
 import { useState, useEffect } from "react";
 interface User {
   id: number;
@@ -1026,12 +1101,22 @@ interface User {
 const AppFetchingData = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState("");
+  // Method1: Using Browser Fetch API
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then((response) => response.json())
+      .then((json) => setUsers(json));
+  }, []); // Only first time run
+
+  // Method2: Using Axios
   useEffect(() => {
     axios
       .get<User[]>("https://jsonplaceholder.typicode.com/xusers")
       .then((res) => setUsers(res.data)) // Success or No Error
       .catch((err) => setError(err.message)); // Fail or Error
   }, []); // Only first time run
+
+
   return (
     <div>
       {error && <p className="text-danger">{error}</p>}
@@ -1045,45 +1130,31 @@ const AppFetchingData = () => {
 };
 
 // Cancelling Fetch request: If user navegate wawy form the page
+// Loading Indicator: until data come from server
 // https://codewithmosh.com/courses/ultimate-react-part1/lectures/45915908
-useEffect(() => {
-  const controller = new AbortController(); // build in class in modern browser, if go away of the page
-  axios
-    .get<User[]>("https://jsonplaceholder.typicode.com/users", {
-      signal: controller.signal,
-    })
-    .then((res) => setUsers(res.data))
-    .catch((err) => {
-      if (err instanceof CanceledError) return; // If close brouser then it works
-      setError(err.message);
-    });
-
-  return () => controller.abort();
-}, []); // Only first time run
-
-
-// Showing Loader untill data come from server. .
 ........
+const [users, setUsers] = useState<User[]>([]);
+const [error, setError] = useState("");
 const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    const controller = new AbortController();
+    const controller = new AbortController(); // Step-1
     axios
       .get<User[]>("https://jsonplaceholder.typicode.com/users", {
-        signal: controller.signal,
+        signal: controller.signal, // Step-2
       })
       .then((res) => {
         setUsers(res.data);
         setLoading(false); // after result come
       })
       .catch((err) => {
-        if (err instanceof CanceledError) return; // If no data here then
+        if (err instanceof CanceledError) return; //  // Step-3, If no data here then
         setError(err.message);
         setLoading(false); // after result come
       });
 
-    return () => controller.abort();
+    return () => controller.abort();  // Step-4; Clean Up function
   }, []); // Only first time run
   return (
     <div>
@@ -1198,8 +1269,7 @@ return (
 ```
 
 ```javascript
-// CRUD using axios
-import React from "react";
+// CRUD using axios full (include upper 2 operation here Delete & Add)
 import axios, { CanceledError } from "axios";
 import "bootstrap/dist/css/bootstrap.css";
 import { useState, useEffect } from "react";
@@ -1310,14 +1380,34 @@ const AppFetchingData = () => {
     </div>
   );
 };
-
-export default AppFetchingData;
 ```
 
-**Above code is enough to perform CRUD. But now we try to do some generick(common) approach, not for user**
+axios.create() -> to create a pre-configured instance of Axios with default values for certain configuration options. This is particularly useful when you want to reuse a set of options across multiple requests in your application.
+[axious.create()](https://axios-http.com/docs/instance)
 
-14. Extracting a Reusable API Client, 15- Extracting the User Service, 16- Creating a Generic HTTP Service, 16- Creating a Generic HTTP Service
-    https://codewithmosh.com/courses/ultimate-react-part1/lectures/45915912
+```javascript
+import axios from "axios";
+
+// Create an instance(object) of Axios with custom configuration
+const apiInstance = axios.create({
+  baseURL: "https://api.example.com",
+  timeout: 5000, // Request timeout in milliseconds
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: "Bearer your_access_token",
+  },
+});
+
+// Now you can use apiInstance to make requests with the specified configuration
+apiInstance
+  .get("/users")
+  .then((res) => {})
+  .catch((err) => {});
+```
+
+axios.create() helps to avoid redundancy in your code and makes it easier to manage and update the configuration globally.
+
+**Above code is enough to perform CRUD. But now we try to do some generick(common) approach, not for user**
 
 **It is little bit high thought think**
 **Here AppFetchingData is like App.js so we can not use it as data fetching**
@@ -1332,7 +1422,40 @@ Componets is responsibe for returning markup and handeling interaction at high l
 // receving two values as object, destructing here, one handel data another if browser close
 ```
 
-**_ App.tsx -> useUsers(hook)-> (api-client -> user-service -> http-service) _**
+<details>
+<summary>App.js (delete(3) Kaj ses) -> user-service/post-service(Only endpoint provide kore) -> http-service(handel all types CRUD, Main work done here apiClient.delete()) -> api-client(contain api configaration) -> axios(finally execute to server)</summary>
+
+```javascript
+//App.js
+const deleteUser = (user: User) => {
+  setUsers(users.filter((currentUser) => currentUser.id != user.id)); // Local delete
+  userService.delete(user.id).ther().catch(); // Server delete using api
+};
+
+//user-Service.ts; Import and Export Create()
+import create from "./http-service";
+export interface User {
+  id: number;
+  name: string;
+}
+export default create("/users");
+
+// http-service.ts Main CRUD done here
+delete(id: number) {
+    return apiClient.delete(this.endpoint + "/" + id); // Use apiClient
+}
+const create = (endpoint: string) => new httpService(endpoint);
+export default create;
+
+//api-client.ts
+import axios, { CanceledError } from "axios";
+export default axios.create({  // Default Export
+  baseURL: "https://jsonplaceholder.typicode.com",
+});
+export { CanceledError }; // Named Export
+```
+
+</details>
 
 <details>
 <summary>1. AppFetchingData.tsx</summary>
@@ -1461,25 +1584,7 @@ export default useUsers;
 </details>
 
 <details>
-<summary>3. api-client.ts</summary>
-
-```javascript
-import axios, { CanceledError } from "axios";
-
-export default axios.create({
-  baseURL: "https://jsonplaceholder.typicode.com",
-  //   headers: {
-  //     'api-key': '...' // Sometimes needed
-  //   }
-});
-
-export { CanceledError };
-```
-
-</details>
-
-<details>
-<summary>4. user-service.ts</summary>
+<summary>3. user-service.ts</summary>
 
 ```javascript
 import create from "./http-service";
@@ -1496,7 +1601,7 @@ export default create("/users"); // Only place to provide endpoint
 </details>
 
 <details>
-<summary>5. http-service.ts</summary>
+<summary>4. http-service.ts</summary>
 
 ```javascript
 import apiClient, { CanceledError } from "./api-client";
@@ -1537,68 +1642,20 @@ export default create;
 ```
 
 </details>
-
-## Demo Content ------------------
-
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
-
-```bash
-pip install foobar
-```
-
-```php
-$s = "Python syntax highlighting";
-echo "Value: " . $s;
-```
-
-```
-No language indicated, so no syntax highlighting.
-But let's throw in a <b>tag</b>.
-```
-
-### License
-
-[EDEVES.COM](https://edeves.com)
-
-Bullet lists nested within numbered list:
-
-1. fruits
-   - apple
-   - banana
-2. vegetables
-   - carrot
-   - broccoli
-   - [edeves](https://edeves.com)
-
-> blockquoting: Markdown uses email-style
-> characters for blockquoting.
->
-> Multiple paragraphs need to be prepended individually.
-
-Inline-style:
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
-
-<dl>
-  <dt>Definition list</dt>
-  <dd>Is something people use sometimes.</dd>
-
-  <dt>Markdown in HTML</dt>
-  <dd>Does *not* work **very** well. Use HTML <em>tags</em>.</dd>
-</dl>
-
 <details>
-<summary>Collapsed section with Table</summary>
+<summary>5. api-client.ts</summary>
 
-| Rank | Languages  |
-| ---: | ---------- |
-|    1 | Javascript |
-|    2 | Python     |
-|    3 | SQL        |
+```javascript
+import axios, { CanceledError } from "axios";
 
-_You can use it for table also_
+export default axios.create({
+  baseURL: "https://jsonplaceholder.typicode.com",
+  //   headers: {
+  //     'api-key': '...' // Sometimes needed
+  //   }
+});
+
+export { CanceledError };
+```
 
 </details>
-
-[![Link Test](https://img.shields.io/badge/fineTune.svg?style=flat-square)](https://edeves.com)
-
-[edeves](https://edeves.com)
