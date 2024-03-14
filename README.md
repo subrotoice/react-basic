@@ -1659,3 +1659,474 @@ export { CanceledError };
 ```
 
 </details>
+
+# Part 2: React Intermidate Topics
+
+## By the end of the lesson what you will have
+
+- Fetching and updating data with React Query
+- All about reducers, context, and providers
+- Managing application state with Zustand
+- Routing with React Router
+
+## - React-query installation
+
+- Install react-query
+- Import QueryClient, QueryClientProvider
+- React query data fetch kore na, Je data fetch kore take order kore kokhon new data fetch korte hobe, data catch kivabe korte hobe.
+- React Query is a library for managing and caching data in React applications. It provides a set of hooks and utilities to simplify the fetching, caching, and updating of data in your components.
+- useQuery: hook handles data fetching, caching, and re-fetching logic automatically
+- Query Keys: Queries are identified by keys, which are typically strings or arrays. The key is used to cache and reference the data associated with a particular query.
+- Mutations: React Query also provides a useMutation hook for handling data mutations (create, update, delete operations). It simplifies the process of sending data to a server and updating the cache accordingly.
+
+- Background Data Refetching: React Query supports automatic background data refetching, helping to keep data up-to-date without requiring manual triggers.
+
+- Optimistic Updates: The library allows for optimistic updates, where UI is updated optimistically before the server responds to a mutation.
+
+- Pagination and Infinite Loading: React Query provides built-in support for handling paginated data and implementing infinite scrolling.
+
+- Query Devtools: React Query comes with a set of developer tools (Devtools) that can be used to inspect and debug the state of queries in your application.
+
+```bash
+npm i @tanstack/react-query@4.28
+```
+
+```jsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+// This line added
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import App from "./App";
+
+const queryClient = new QueryClient(); // this line added
+
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}> <!--This line added-->
+      <App />
+    </QueryClientProvider>
+  </React.StrictMode>
+);
+```
+
+Query Keys: Queries are identified by keys, which are typically strings or arrays. The key is used to cache and reference the data associated with a particular query.
+
+## - Fetching Data
+
+- Auto refresh, Caching
+
+```jsx
+// TodoList.tsx
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
+interface Todo {
+  id: number;
+  title: string;
+  userId: number;
+  completed: boolean;
+}
+
+const TodoList = () => {
+  const fetchTodos = () =>
+    axios
+      .get<Todo[]>("https://jsonplaceholder.typicode.com/todos")
+      .then((res) => res.data);
+
+    // this code is only for react query
+  const { data: todos, error } = useQuery({
+    queryKey: ["todos"],
+    queryFn: fetchTodos,
+  });
+
+  if (error) return <p>{error}</p>;
+
+  return (
+    <ul className="list-group">
+      {todos?.map((todo) => (
+        <li key={todo.id} className="list-group-item">
+          {todo.title}
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+```
+
+## - Handling Errors
+
+```jsx
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
+interface Todo {
+  id: number;
+  title: string;
+  userId: number;
+  completed: boolean;
+}
+
+const TodoList = () => {
+  const fetchTodos = () =>
+    axios
+      .get<Todo[]>("https://xjsonplaceholder.typicode.com/todos")
+      .then((res) => res.data);
+
+  const { data: todos, error } = useQuery<Todo[], Error>({
+    queryKey: ["todos"],
+    queryFn: fetchTodos,
+  });
+  if (error) return <p>{error.message}</p>;
+
+  return (
+    <ul className="list-group">
+      {todos?.map((todo) => (
+        <li key={todo.id} className="list-group-item">
+          {todo.title}
+        </li>
+      ))}
+    </ul>
+  );
+};
+```
+
+## - Loading
+
+```jsx
+.................
+  const {
+    data: todos,
+    error,
+    isLoading,
+  } = useQuery<Todo[], Error>({
+    queryKey: ["todos"],
+    queryFn: fetchTodos,
+  });
+
+  if (isLoading) return <p>Loading....</p>;
+
+  if (error) return <p>{error.message}</p>;
+
+```
+
+## - Creating a custom query hook
+
+```jsx
+// TodoList.tsx
+  const { data: todos, error, isLoading } = useTodos();
+
+// useTodos.ts (Hook)
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
+interface Todo {
+  id: number;
+  title: string;
+  userId: number;
+  completed: boolean;
+}
+
+const useTodos = () => {
+  const fetchTodos = () =>
+    axios
+      .get<Todo[]>("https://jsonplaceholder.typicode.com/todos")
+      .then((res) => res.data);
+
+  return useQuery<Todo[], Error>({ // return{ data, error, isLoading }
+    queryKey: ["todos"],
+    queryFn: fetchTodos,
+  });
+};
+
+export default useTodos;
+```
+
+## - React Query Dev Tools
+
+```bash
+npm i @tanstack/react-query-devtools@4.28
+```
+
+```jsx
+// main.tsx
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
+<QueryClientProvider client={queryClient}>
+  <App />
+  <ReactQueryDevtools />
+</QueryClientProvider>;
+```
+
+## - Customizing Query Setting
+
+```jsx
+- Refetching: IF data is stale(old) data, react query is attempt to fetch new data form backend while at the same time returning the stale(বাসি) data from cache data, when new data come component rerender
+// main.tsx (Often need to customized is staleTime)
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 4,
+      cacheTime: 300_000, // 5m (If no observer or no component using this cache then invalide)
+      staleTime: 10 * 1000, // 10s (How long data is considired fresh, next time react query refetch data)
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false, // go offline and back onlinbe
+      refetchOnMount: false,
+    },
+  },
+});
+
+// useTodos.ts | You can use here also
+useQuery<Todo[], Error>({
+    // return{ data, error, isLoading }
+    queryKey: ["todos"],
+    queryFn: fetchTodos,
+    staleTime: 10 * 1000, // 10s
+  });
+```
+
+## - Parameterized Query: Dynamic query key (users/1/posts filter post by user)
+
+- Query Keys: Queries are identified by keys, which are typically strings or arrays. The key is used to cache and reference the data associated with a particular query.
+
+```jsx
+  return useQuery<Post[], Error>({
+    queryKey: ["users", userId, "posts"], // It is very similar dependency array of useEffect, when any value change query will reexecuted
+    queryKey: userId ? ["users", userId, "posts"] : ["posts"], // if userId is truty then ...
+    queryFn: fetchPosts,
+    staleTime: 1 * 60 * 1000, // 1m
+  });
+```
+
+## - Paginated queries
+
+- keepPreviousData: true: During the loading state (isLoading is true), the component can render the UI using the previous data, preventing a sudden change in the displayed content.
+- Keep data of current page instade of showing loading when new data come replace smothly
+
+```jsx
+// PostList.tsx
+import { useState } from "react";
+import usePosts from "./hooks/usePosts";
+
+const PostList = () => {
+  const pageSize = 10;
+  const [page, setPage] = useState(1);
+  const { data: posts, error, isLoading } = usePosts({ page, pageSize });
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>{error.message}</p>;
+
+  return (
+    <>
+      <ul className="list-group">
+        {posts?.map((post) => (
+          <li key={post.id} className="list-group-item">
+            {post.title}
+          </li>
+        ))}
+      </ul>
+      <button
+        disabled={page === 1}
+        onClick={() => setPage(page - 1)}
+        className="btn btn-primary mt-3"
+      >
+        Previous
+      </button>
+      <button
+        onClick={() => setPage(page + 1)}
+        className="btn btn-primary mt-3 ms-3"
+      >
+        Next
+      </button>
+    </>
+  );
+};
+
+// usePosts.ts (keepPreviousData: true, // Keep data of current page instade of showing loading when new data come replace smothly)
+// the component can render the UI using the previous(current data) data, preventing a sudden change in the displayed content.
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
+interface Post {
+  id: number;
+  title: string;
+  body: string;
+  userId: number;
+}
+
+interface PostQuery {
+  page: number;
+  pageSize: number;
+}
+
+const usePosts = (query: PostQuery) =>
+  useQuery<Post[], Error>({
+    queryKey: ["posts", query],
+    queryFn: () =>
+      axios
+        .get("https://jsonplaceholder.typicode.com/posts", {
+          params: { // jsonplaceholder api pattern
+            _start: (query.page - 1) * query.pageSize,
+            _limit: query.pageSize,
+          },
+        })
+        .then((res) => res.data),
+    staleTime: 1 * 60 * 1000, // 1m
+    keepPreviousData: true, // Keep data of current page instade of showing loading
+  });
+export default usePosts;
+```
+
+## - Infinite queries (Littl bit tricky and difficult)
+
+```jsx
+// PostList.tsx
+import usePosts from "./hooks/usePosts";
+import React from "react";
+
+const PostList = () => {
+  const pageSize = 10;
+  const { data, error, isLoading, fetchNextPage, isFetchingNextPage } =
+    usePosts({ pageSize });
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>{error.message}</p>;
+
+  return (
+    <>
+      <ul className="list-group">
+        {data.pages.map((page, index) => (
+          <React.Fragment key={index}>
+            {page.map((post) => (
+              <li key={post.id} className="list-group-item">
+                {post.title}
+              </li>
+            ))}
+          </React.Fragment>
+        ))}
+      </ul>
+      <button
+        disabled={isFetchingNextPage}
+        onClick={() => fetchNextPage()}
+        className="btn btn-primary mt-3 ms-3"
+      >
+        {isFetchingNextPage ? "Loading..." : "Load More"}
+      </button>
+    </>
+  );
+};
+
+// usePosts.ts
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
+interface Post {
+  id: number;
+  title: string;
+  body: string;
+  userId: number;
+}
+
+interface PostQuery {
+  pageSize: number;
+}
+
+const usePosts = (query: PostQuery) =>
+  useInfiniteQuery<Post[], Error>({
+    queryKey: ["posts", query],
+    queryFn: ({ pageParam = 1 }) =>
+      axios
+        .get("https://jsonplaceholder.typicode.com/posts", {
+          params: {
+            _start: (pageParam - 1) * query.pageSize,
+            _limit: query.pageSize,
+          },
+        })
+        .then((res) => res.data),
+    staleTime: 1 * 60 * 1000, // 1m
+    keepPreviousData: true, // Keep data of current page instade of showing loading
+    getNextPageParam: (lastPage, allPages) => {
+      // 1->2   https://prnt.sc/0jev3TFIYJ1K  \ Array[Post[] Post[] Post[]]  array.length 3
+      return lastPage.length > 0 ? allPages.length + 1 : undefined;
+    },
+  });
+export default usePosts;
+```
+
+## - Mutating Data (React Query - Part 2)
+
+(After mutation (add to backend(api) we can invalidate cache and refetch or add data directly to cache)) <br >
+
+Updating Cached Data: Then, you can use the setQueryData function to update the cached data for a specific query:
+
+```jsx
+import { useQueryClient } from "react-query";
+const queryClient = useQueryClient();
+queryClient.setQueryData("key", newData);
+```
+
+```jsx
+// TodoForm.tsx (After mutation (add to backend(api) we can invalidate cache and refetch or add data directly to cache))
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+const TodoForm = () => {
+  const queryClient = useQueryClient();
+  const addTodo = useMutation({
+    mutationFn: (todo: Todo) =>
+      axios
+        .post<Todo>("https://jsonplaceholder.typicode.com/todos", todo)
+        .then((res) => res.data),
+    onSuccess: (savedTodo, newTodo) => {
+      // callBack(), both send from server, savedTodo is server respons, newTodo object sent form client
+      // Approach 1: Invalidating the cache and refetch
+      // queryClient.invalidateQueries({ // this will not work because it is fake api
+      //   queryKey: ["todos"],
+      // });
+
+      // Approach 2: Updating the data in the cache directly
+      // queryClient.setQueryData("key", newData);
+      queryClient.setQueryData<Todo[]>(["todos"], (todos) => [
+        savedTodo,
+        ...(todos || []),
+      ]);
+    },
+  });
+  const ref = useRef<HTMLInputElement>(null);
+
+  return (
+    <form
+      className="row mb-3"
+      onSubmit={(event) => {
+        event.preventDefault();
+
+        if (ref.current && ref.current.value)
+          addTodo.mutate({
+            id: 0,
+            title: ref.current?.value,
+            completed: false,
+            userId: 1,
+          });
+      }}
+    >
+      <div className="col">
+        <input ref={ref} type="text" className="form-control" />
+      </div>
+      <div className="col">
+        <button className="btn btn-primary">Add</button>
+      </div>
+    </form>
+  );
+};
+```
+
+## -
+
+```jsx
+
+```
+
+## -
+
+```jsx
+
+```
