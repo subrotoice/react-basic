@@ -2119,10 +2119,17 @@ const TodoForm = () => {
 };
 ```
 
-## -
+## - Handling Mutation Error (TodoForm.tsx)
+
+https://prnt.sc/6pOasO8ozW_C
 
 ```jsx
+// TodoForm.tsx (<Data we get from backend, Error Object, Data we send to backend>)
+const addTodo = useMutation<Todo, Error, Todo>({})
 
+{addTodo.error && (
+  <div className="alert alert-danger">{addTodo.error.message}</div>
+)}
 ```
 
 ## -
