@@ -8,7 +8,7 @@ const TodoForm = () => {
   const addTodo = useMutation<Todo, Error, Todo>({
     mutationFn: (todo: Todo) =>
       axios
-        .post<Todo>("https://xjsonplaceholder.typicode.com/todos", todo)
+        .post<Todo>("https://jsonplaceholder.typicode.com/todos", todo)
         .then((res) => res.data),
     onSuccess: (savedTodo, newTodo) => {
       // callBack(), both send from server, savedTodo is server respons, newTodo object sent form client
@@ -50,7 +50,9 @@ const TodoForm = () => {
           <input ref={ref} type="text" className="form-control" />
         </div>
         <div className="col">
-          <button className="btn btn-primary">Add</button>
+          <button disabled={addTodo.isLoading} className="btn btn-primary">
+            {addTodo.isLoading ? "Loading..." : "Add"}
+          </button>
         </div>
       </form>
     </>

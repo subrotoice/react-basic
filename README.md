@@ -1671,9 +1671,9 @@ export { CanceledError };
 
 ## - React-query installation
 
-- Install react-query
+- Install react-query (useQuery(Read) and useMutation(Create, U, D) are two main hook)
 - Import QueryClient, QueryClientProvider
-- React query data fetch kore na, Je data fetch kore take order kore kokhon new data fetch korte hobe, data catch kivabe korte hobe.
+- React query is not for fetching data, Je data fetch kore take order kore kokhon new data fetch korte hobe, data catch kivabe korte hobe.
 - React Query is a library for managing and caching data in React applications. It provides a set of hooks and utilities to simplify the fetching, caching, and updating of data in your components.
 - useQuery: hook handles data fetching, caching, and re-fetching logic automatically
 - Query Keys: Queries are identified by keys, which are typically strings or arrays. The key is used to cache and reference the data associated with a particular query.
@@ -1685,7 +1685,93 @@ export { CanceledError };
 
 - Pagination and Infinite Loading: React Query provides built-in support for handling paginated data and implementing infinite scrolling.
 
-- Query Devtools: React Query comes with a set of developer tools (Devtools) that can be used to inspect and debug the state of queries in your application.
+- Query Devtools: React Query comes with a set of developer tools (Devtools) that can be used to inspect and debug the state of queries in your application. <br >
+
+useQuery: This hook is used for fetching data from a server or any other data source. It provides a declarative way to fetch and cache data, with built-in features like caching, background refetching, and automatic stale data management. <br >
+
+```jsx
+import { useQuery } from "react-query";
+const { data, isLoading, isError } = useQuery("todos", fetchTodos);
+
+// Complete features
+const {
+  data,
+  dataUpdatedAt,
+  error,
+  errorUpdatedAt,
+  failureCount,
+  failureReason,
+  fetchStatus,
+  isError,
+  isFetched,
+  isFetchedAfterMount,
+  isFetching,
+  isInitialLoading,
+  isLoading,
+  isLoadingError,
+  isPaused,
+  isPending,
+  isPlaceholderData,
+  isRefetchError,
+  isRefetching,
+  isStale,
+  isSuccess,
+  refetch,
+  status,
+} = useQuery(
+  {
+    queryKey,
+    queryFn,
+    gcTime,
+    enabled,
+    networkMode,
+    initialData,
+    initialDataUpdatedAt,
+    meta,
+    notifyOnChangeProps,
+    placeholderData,
+    queryKeyHashFn,
+    refetchInterval,
+    refetchIntervalInBackground,
+    refetchOnMount,
+    refetchOnReconnect,
+    refetchOnWindowFocus,
+    retry,
+    retryOnMount,
+    retryDelay,
+    select,
+    staleTime,
+    structuralSharing,
+    throwOnError,
+  },
+  queryClient
+);
+```
+
+useMutation: As mentioned earlier, useMutation is used for handling mutations, such as creating, updating, or deleting data on the server. <br >
+
+```jsx
+import { useMutation } from "react-query";
+const mutation = useMutation(createTodo);
+```
+
+useQueryClient: This hook can be used to manually interact with the cache or trigger queries programmatically. <br >
+
+```jsx
+import { useQueryClient } from "react-query";
+const queryClient = useQueryClient();
+queryClient.setQueryData("key", newData); // Updating the data in the cache directly
+```
+
+useInfiniteQuery: This hook is used for paginated data fetching. It's similar to useQuery, but it's designed for fetching data in chunks or pages. <br >
+
+```jsx
+import { useInfiniteQuery } from "react-query";
+const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  useInfiniteQuery("todos", fetchTodos, {
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+  });
+```
 
 ```bash
 npm i @tanstack/react-query@4.28
@@ -1977,7 +2063,7 @@ const usePosts = (query: PostQuery) =>
 export default usePosts;
 ```
 
-## - Infinite queries (Littl bit tricky and difficult)
+## - Infinite queries "useInfiniteQuery" Hook (Littl bit tricky and difficult)
 
 ```jsx
 // PostList.tsx
@@ -2055,11 +2141,44 @@ export default usePosts;
 
 ## - Mutating Data (React Query - Part 2)
 
+The useMutation hook is used for handling mutations, which are operations that modify data on the server, such as creating, updating, or deleting resources. <br>
+
 (After mutation (add to backend(api) we can invalidate cache and refetch or add data directly to cache)) <br >
 
 Updating Cached Data: Then, you can use the setQueryData function to update the cached data for a specific query:
 
 ```jsx
+const { data, error, isError, isIdle, isPending, isPaused, isSuccess, failureCount, failureReason, mutate, mutateAsync, reset, status, submittedAt, variables} =
+useMutation({ mutationFn, gcTime, mutationKey, networkMode, onError, onMutate, onSettled, onSuccess, retry, retryDelay, throwOnError, meta, })
+
+mutate(variables, {  // Function call
+  onError,
+  onSettled,
+  onSuccess,
+})
+
+const addTodo = useMutation<Todo, Error, Todo>({  // step 2
+  mutationFn: (todo: Todo) => // step 3: mutationFn
+    axios
+      .post<Todo>("https://jsonplaceholder.typicode.com/todos", todo)
+      .then((res) => res.data),
+  onSuccess: (savedTodo, newTodo) => {  // step 3: onMutate, onSuccess, onError, onSettled, and optimisticUpdate. These options allow you to customize mutation behavior, handle side effects, and provide a better user experience.
+    queryClient.setQueryData<Todo[]>(["todos"], (todos) => {
+      return [savedTodo, ...(todos || [])];
+    });
+  },
+});
+
+addTodo.mutate({ // Step 1
+  id: 0,
+  title: ref.current?.value,
+  completed: false,
+  userId: 1,
+});
+```
+
+```jsx
+// To update cache data directly
 import { useQueryClient } from "react-query";
 const queryClient = useQueryClient();
 queryClient.setQueryData("key", newData);
@@ -2132,8 +2251,10 @@ const addTodo = useMutation<Todo, Error, Todo>({})
 )}
 ```
 
-## -
+## - Showing mutation progress (useMutation has a return type isLoading)
 
 ```jsx
-
+<button disabled={addTodo.isLoading} className="btn btn-primary">
+  {addTodo.isLoading ? "Loading..." : "Add"}
+</button>
 ```
