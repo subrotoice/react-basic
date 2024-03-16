@@ -1,5 +1,6 @@
 # TypeScript and Vite and React Basic
 
+[Vercel Deploy](https://react-crud-subroto.vercel.app) <br>
 [ReactJs Gist Subroto](https://gist.github.com/subrotoice/98eb2fcbcef23c733cd36e0575c2e37c) <br>
 [Lucy Theme](https://vscodethemes.com/e/juliettepretot.lucy-vscode/lucy?language=javascript)
 
@@ -1422,6 +1423,109 @@ Componets is responsibe for returning markup and handeling interaction at high l
 // receving two values as object, destructing here, one handel data another if browser close
 ```
 
+## Creating basic hook ( Hook just a function )
+
+A custom hook is a JavaScript function that utilizes React's built-in hooks (such as useState, useEffect, useContext, etc.) to encapsulate and share stateful logic between components. Custom hooks allow you to extract reusable logic from components and compose it into custom hooks that can be reused across multiple components.
+
+```jsx
+// BASIC Version
+// DataFetch.tsx
+import useFetch from "./useFetch";
+
+const DataFetch = () => {
+  const url = "https://dummyjson.com/posts";
+  const urlExtra = useFetch(url); // hook call
+
+  return (
+    <div>
+      <h1>{urlExtra}</h1>
+    </div>
+  );
+};
+
+// useFetch.ts (hook)
+const useFetch = (url: string) => {
+  console.log(url); // execute
+  return url + "/extra"; // return
+};
+
+export default useFetch;
+
+// ADVANCE Version ------
+// DataFetch.tsx
+import useFetch from "./useFetch";
+
+const DataFetch = () => {
+  const url = "https://dummyjson.com/posts";
+  const { data, error, isLoading } = useFetch(url);
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
+
+  return (
+    <div>
+      <h1>Data</h1>
+      {data.map((post) => (
+        <p key={post.id}>{post.title}</p>
+      ))}
+    </div>
+  );
+};
+
+export default DataFetch;
+
+// useFetch.ts (fetch version) return { data }
+const useFetch = (url: string) => {
+  const [data, setData] = useState<Post[]>([]);
+
+  useEffect(() => {
+    fetch(url)
+      .then((res) => res.json())
+      .then((json) => {
+        // console.log(json);
+        setData(json.posts);
+      });
+  }, [url]);
+  return { data };
+};
+
+// useFetch.ts (axios version) return { data, error, isLoading }
+import axios from "axios";
+import { useState, useEffect } from "react";
+
+interface Post {
+  id: number;
+  title: string;
+  body: string;
+}
+
+interface FetchPostResponse {
+  total: number;
+  posts: Post[];
+}
+
+const useFetch = (url: string) => {
+  const [data, setData] = useState<Post[]>([]);
+  const [isLoading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get<FetchPostResponse>(url)
+      .then((res) => {
+        setData(res.data.posts);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, [url]);
+  return { data, error, isLoading };
+};
+export default useFetch;
+```
+
 <details>
 <summary>App.js (delete(3) Kaj ses) -> user-service/post-service(Only endpoint provide kore) -> http-service(handel all types CRUD, Main work done here apiClient.delete()) -> api-client(contain api configaration) -> axios(finally execute to server)</summary>
 
@@ -1797,7 +1901,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 
 Query Keys: Queries are identified by keys, which are typically strings or arrays. The key is used to cache and reference the data associated with a particular query.
 
-## - Fetching Data
+## - Fetching Data - useQuery hook
 
 - Auto refresh, Caching
 
@@ -2257,4 +2361,264 @@ const addTodo = useMutation<Todo, Error, Todo>({})
 <button disabled={addTodo.isLoading} className="btn btn-primary">
   {addTodo.isLoading ? "Loading..." : "Add"}
 </button>
+```
+
+## - Optimistic updates (TodoForm.tsx) Difficult (Can watch again)
+
+onMutate: instant cache update and return context of previous data, onError: use previousTodos of context to update query cache, onSuccess: replace newTodo with savedTodo from backend <br>
+Context: is the object to pass data in between callbacks(onMutate, onSuccess, onError).
+
+```jsx
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+interface AddTodoContex {
+  previousTodos: Todo[];
+}
+
+const TodoForm = () => {
+  const queryClient = useQueryClient();
+  const addTodo = useMutation<Todo, Error, Todo, AddTodoContex>({
+    mutationFn: (todo: Todo) =>
+      axios
+        .post<Todo>("https://jsonplaceholder.typicode.com/todosx", todo)
+        .then((res) => res.data),
+
+    onMutate: (newTodo: Todo) => {
+      const previousTodos = queryClient.getQueryData<Todo[]>(["todos"]) || [];
+      queryClient.setQueryData<Todo[]>(["todos"], (todos) => {
+        return [newTodo, ...(todos || [])];
+      });
+
+      if (ref.current) ref.current.value = "";
+
+      return { previousTodos }; // it could be access from any callback ie. onError
+    },
+
+    onSuccess: (savedTodo, newTodo) => {
+      queryClient.setQueryData<Todo[]>(["todos"], (todos) =>
+        todos?.map((todo) => (todo === newTodo ? savedTodo : todo))
+      );
+    },
+
+    onError: (error, newTodo, context) => {
+      if (!context) return;
+
+      queryClient.setQueryData<Todo[]>(["todos"], context.previousTodos);
+    },
+  });
+  const ref = useRef<HTMLInputElement>(null);
+
+  return (
+    <>
+      {addTodo.error && (
+        <div className="alert alert-danger">{addTodo.error.message}</div>
+      )}
+      <form
+        className="row mb-3"
+        onSubmit={(event) => {
+          event.preventDefault();
+
+          if (ref.current && ref.current.value)
+            addTodo.mutate({
+              id: 0,
+              title: ref.current?.value,
+              completed: false,
+              userId: 1,
+            });
+        }}
+      >
+        <div className="col">
+          <input ref={ref} type="text" className="form-control" />
+        </div>
+        <div className="col">
+          <button disabled={addTodo.isLoading} className="btn btn-primary">
+            {addTodo.isLoading ? "Loading..." : "Add"}
+          </button>
+        </div>
+      </form>
+    </>
+  );
+};
+```
+
+## - Creating a custom mutaion hook (useAddTodo.ts new hook)
+
+Updating UI: Component
+Data Management: Hook
+
+```jsx
+// TodoForm.tsx
+import { useRef } from "react";
+import useAddTodo from "./hooks/useAddTodo";
+
+const TodoForm = () => {
+  const ref = useRef<HTMLInputElement>(null);
+  const addTodo = useAddTodo(() => {
+    if (ref.current) ref.current.value = "";
+  });
+
+  return (
+    <>
+      {addTodo.error && (
+        <div className="alert alert-danger">{addTodo.error.message}</div>
+      )}
+      <form
+        className="row mb-3"
+        onSubmit={(event) => {
+          event.preventDefault();
+
+          if (ref.current && ref.current.value)
+            addTodo.mutate({
+              id: 0,
+              title: ref.current?.value,
+              completed: false,
+              userId: 1,
+            });
+        }}
+      >
+        <div className="col">
+          <input ref={ref} type="text" className="form-control" />
+        </div>
+        <div className="col">
+          <button disabled={addTodo.isLoading} className="btn btn-primary">
+            {addTodo.isLoading ? "Loading..." : "Add"}
+          </button>
+        </div>
+      </form>
+    </>
+  );
+};
+
+// constants.ts
+export const CACHE_KEY_TODOS = ["todos"];
+
+// useAddTodo.ts
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Todo } from "./useTodos";
+import axios from "axios";
+import { CACHE_KEY_TODOS } from "../constants";
+
+interface AddTodoContex {
+  previousTodos: Todo[];
+}
+
+const addTodo = (onAdd: () => void) => {
+  const queryClient = useQueryClient();
+  return useMutation<Todo, Error, Todo, AddTodoContex>({
+    mutationFn: (todo: Todo) =>
+      axios
+        .post<Todo>("https://jsonplaceholder.typicode.com/todosx", todo)
+        .then((res) => res.data),
+
+    onMutate: (newTodo: Todo) => {
+      const previousTodos =
+        queryClient.getQueryData<Todo[]>(CACHE_KEY_TODOS) || [];
+      queryClient.setQueryData<Todo[]>(CACHE_KEY_TODOS, (todos = []) => [
+        // another way
+        newTodo,
+        ...todos,
+      ]);
+      //
+      onAdd();
+
+      return { previousTodos };
+    },
+
+    onSuccess: (savedTodo, newTodo) => {
+      queryClient.setQueryData<Todo[]>(CACHE_KEY_TODOS, (todos) =>
+        todos?.map((todo) => (todo === newTodo ? savedTodo : todo))
+      );
+    },
+
+    onError: (error, newTodo, context) => {
+      if (!context) return;
+
+      queryClient.setQueryData<Todo[]>(CACHE_KEY_TODOS, context.previousTodos);
+    },
+  });
+};
+```
+
+## -
+
+```jsx
+
+```
+
+## -
+
+```jsx
+
+```
+
+## -
+
+```jsx
+
+```
+
+## -
+
+```jsx
+
+```
+
+## -
+
+```jsx
+
+```
+
+## -
+
+```jsx
+
+```
+
+## -
+
+```jsx
+
+```
+
+## -
+
+```jsx
+
+```
+
+## -
+
+```jsx
+
+```
+
+## -
+
+```jsx
+
+```
+
+## -
+
+```jsx
+
+```
+
+## -
+
+```jsx
+
+```
+
+## -
+
+```jsx
+
+```
+
+## -
+
+```jsx
+
 ```
