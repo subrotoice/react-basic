@@ -5,7 +5,7 @@
 [Lucy Theme](https://vscodethemes.com/e/juliettepretot.lucy-vscode/lucy?language=javascript)
 
 ```javascript
-// in main.tsx change component to see different implentation
+// main.tsx change component to see different implentation.
 <React.StrictMode>
   <AppFetchingData />
   {/* <App2 />
@@ -21,15 +21,16 @@
 2. Props: Passing data from parent to child using <br />
 3. Callback Function: Passing data from child to Parent
 
+Example 1: Parent to child data transer
+
 ```javascript
-// Example 1: Parent to child data transer
 // ABC (Without typescript) | Observation: before retunr: handel Data, Inside return: handel Markeup
 // App.js
 <Person name="Goutom">Subroto</Person>; // Person.tsx | name=goutom, children=Subroto passing
 
 // Person.js
-const Person = ({ name, children }) => { // App.tsx
-  // const Test = (props) => {  this could be use
+const Person = ({ name, children }) => {
+  // App.tsx
   return (
     <div>
       <h1>
@@ -38,13 +39,16 @@ const Person = ({ name, children }) => { // App.tsx
     </div>
   );
 };
+```
 
+Example 2: Function defination comes from App.js but argument pass from component
 
-// Example 2:
+```jsx
 // App.js
 const selectItem = (item) => {
   console.log(item);
 };
+
 return ( // onClick event e click korle onClick function props call hoy.
   <div>
     <Button color="Primary" onClick={selectItem}> { // color="Primary222", typescript error, but work }
@@ -59,7 +63,7 @@ interface Props { // TypeScript Interface: To define Shape of Props | Outside Bu
   color?: "Primary" | "Sedondary" | "Danger"; // ? For Optional, Outside this value you can not set
   selectItem: (data: string) => void;
 }
-// Destructing Props
+
 const Button = ({ children, onClick, color = "Primary"  }: Props) => {
   return (
     <button
@@ -72,15 +76,25 @@ const Button = ({ children, onClick, color = "Primary"  }: Props) => {
     </button>
   );
 };
+```
 
-// Example 3 : Child to Parent Data transfer (Very Important) ---
+Example 3 : Child to Parent Data transfer (Very Important)
+
+```jsx
 // App.js
+// In one line arraw function defination
+<Person name="Shipi" country="USA" onClickTest={(name) => console.log(name)}>
+  Subroto
+</Person>;
 const PersonFunction = (data: string) => {
   console.log("PersonFunction " + data);
 };
-<Person name="Shipi" country="USA" onClickTest={PersonFunction}> Subroto </Person> //No argument pass here,
-// or: in one line arraw function defination
-<Person name="Shipi" country="USA" onClickTest={(name)=>console.log(name)}> Subroto </Person> //No argument pass here,
+
+// Passing functino reference
+<Person name="Shipi" country="USA" onClickTest={PersonFunction}>
+  Subroto
+</Person>;
+
 // 1. Function Defination - Argument Yes
 // 2. Component Use - Argument No
 // 3. Function Call from Child Component - Argument Yes
@@ -92,14 +106,38 @@ interface Props {
   country?: "Bangladesh" | "India" | "USA";
   onClickTest: (data: string) => void;
 }
-<a onClick={() => onClickTest("Suboto Biswas")}>Click Here</a>
+<button onClick={() => onClickTest("Suboto Biswas")}>Click Here</button>;
 ```
 
-NB: onClick button er event, onClickTest Functional Props, PersonFunction is function name; Passing data using arraw function. if we use onClickTest("subrotoBiswas") function will directly call so use arraw function
+Example 4 : Another way of passing props
 
-- If you share data between two state then data lifted up to parent and then send to anoter children.
+```jsx
+// Both are same
+<MyImage id={3} name="MyName" />
+// Outer bracket {} for writing js cdoe in jsx inner is actual object
+<MyImage {...{ id: 3, name: "myName" }} />
 
-**Alert: here onClose is Props(Argu), not event like onClick**
+// MyImage.tsx
+import React from "react";
+
+interface Props {
+  id: number;
+  name: string;
+}
+
+const MyImage = (props: Props) => {
+  return <div>MyImage {props.name}</div>;
+};
+
+export default MyImage;
+```
+
+NB: onClick react event, onClickTest Functional Props, PersonFunction is function name; Passing data using arraw function. if we use onClickTest("subrotoBiswas") function will directly call so use arraw function
+
+## Share state between two component
+
+**If you share data between two state then data lifted up to parent and then send to anoter children**<br>
+Alert: here onClose is Props(Argu), not event like onClick
 
 ```javascript
 // App.js,  here onClose is Props(Argu), not event like onClick
@@ -122,6 +160,7 @@ interface Props {
   color?: "primary" | "success" | "danger";
   onClose: () => void;
 }
+
 const Alert = ({ children, onClose, color = "primary" }: Props) => {
   return (
     <div>
@@ -202,6 +241,7 @@ const [expenses, setExpenses] = useState([
   { id: 2, description: "bbb", amount: 5, category: "Goods" },
   { id: 3, description: "ccc", amount: 5, category: "Entertainment" },
 ]);
+
 // Filter: Without funciton
 {
   expenses.map((e) => (
@@ -214,6 +254,7 @@ const [expenses, setExpenses] = useState([
     </button>
   ));
 }
+
 // Filter: With funciton
 const clickHandler = (e: number) => {
   console.log(e);
@@ -472,7 +513,7 @@ const ExpandableText = ({ children, maxChars = 100 }: Props) => {
 </ExpandableText>;
 ```
 
-# Ch-6: Building Forms ---
+# Ch-6: Building Forms
 
 **Form value may collected in Two way.**  
 **Way 1: useRef Hook**
@@ -1063,38 +1104,21 @@ const ExpenseFilter = ({ onSelectCategory }: Props) => {
 
 # Ch-7: Connecting to the Backend
 
+Fetching Data useing fetch(), axios
+
 ```bash
-// Fetching Data useing fetch(), axios
 npm i axios@1.3.4
 ```
 
-```javascript
-// Axios CRUD
-// C: Add Users in Axios
-axios
-  .post("https://jsonplaceholder.typicode.com/users/", newUser) // API URL+Endpoing+Payload(newUser)
-  .then((res) => { // Success
-    console.log(res);
-  })
-  .catch((err) => { // Failed
-    console.log(err);
-  });
-// R: Read
-axios
-  .get("https://jsonplaceholder.typicode.com/users", {
-    signal: controller.signal,
-  }) // return a Promise
-  .then((res) => { Success })
-  .catch((err) => { Failed });
-// U: Update
-axios
-  .patch("https://jsonplaceholder.typicode.com/users/" + user.id, updatedUser)
-  .catch((err) => { Handel Only Filed If you do not want to handel success });
-// D: Delete User using Axios
-axios.delete("https://jsonplaceholder.typicode.com/users/" + user.id).catch((err) => {});
+### Fetching Data from server.
 
+- Method 1: Fetch()
+- Method 2: Axios
+
+```jsx
 import axios from "axios";
 import { useState, useEffect } from "react";
+
 interface User {
   id: number;
   name: string;
@@ -1102,12 +1126,13 @@ interface User {
 const AppFetchingData = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState("");
+
   // Method1: Using Browser Fetch API
   useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/users")
       .then((response) => response.json())
       .then((json) => setUsers(json));
-  }, []); // Only first time run
+  }, []); // [] Only first time run
 
   // Method2: Using Axios
   useEffect(() => {
@@ -1115,7 +1140,7 @@ const AppFetchingData = () => {
       .get<User[]>("https://jsonplaceholder.typicode.com/xusers")
       .then((res) => setUsers(res.data)) // Success or No Error
       .catch((err) => setError(err.message)); // Fail or Error
-  }, []); // Only first time run
+  }, []);
 
 
   return (
@@ -1123,167 +1148,64 @@ const AppFetchingData = () => {
       {error && <p className="text-danger">{error}</p>}
       <ul>
         {users.map((user) => (
-          <li>{user.name}</li>
+          <li key={user.id}>{user.name}</li>
         ))}
       </ul>
     </div>
   );
 };
-
-// Cancelling Fetch request: If user navegate wawy form the page
-// Loading Indicator: until data come from server
-// https://codewithmosh.com/courses/ultimate-react-part1/lectures/45915908
-........
-const [users, setUsers] = useState<User[]>([]);
-const [error, setError] = useState("");
-const [isLoading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setLoading(true);
-    const controller = new AbortController(); // Step-1
-    axios
-      .get<User[]>("https://jsonplaceholder.typicode.com/users", {
-        signal: controller.signal, // Step-2
-      })
-      .then((res) => {
-        setUsers(res.data);
-        setLoading(false); // after result come
-      })
-      .catch((err) => {
-        if (err instanceof CanceledError) return; //  // Step-3, If no data here then
-        setError(err.message);
-        setLoading(false); // after result come
-      });
-
-    return () => controller.abort();  // Step-4; Clean Up function
-  }, []); // Only first time run
-  return (
-    <div>
-      {error && <p className="text-danger">{error}</p>}
-      {isLoading && <div className="spinner-border"></div>}
-      .......................
 ```
 
-```javascript
-// Deleting Data, if error get back to original data
-useEffect(() => {
-  setLoading(true);
-  const controller = new AbortController();
-  axios
-    .get<User[]>("https://jsonplaceholder.typicode.com/users", {
-      signal: controller.signal,
-    })
-    .then((res) => {
-      setUsers(res.data);
-      setLoading(false);
-    })
-    .catch((err) => {
-      if (err instanceof CanceledError) return; // If no data here then.
-      setError(err.message);
-      setLoading(false);
-    });
+## Axios syntax - CRUD in Short
 
-  return () => controller.abort();
-}, []);
+```jsx
+// C: Add Users using Axios
+axios
+  .post("https://jsonplaceholder.typicode.com/users/", newUser) // Base_URL + Endpoing + Payload(newUser)
+  .then((res) => { // Success
+    console.log(res);
+  })
+  .catch((err) => { // Failed
+    console.log(err);
+  });
 
-const deleteUser = (user: User) => {
-  const originalUser = [...users]; // Store all users in another variable before delete
-  setUsers(users.filter((u) => u.id != user.id));
-  axios
-    .delete("https://jsonplaceholder.typicode.com/users/" + user.id)
-    .then(console.log("back request"))
-    .catch((err) => {
-      setError(err.message);
-      setUsers(originalUser); // If error occure then Get back to original user
-    });
-};
+// R: Read
+axios
+  .get("https://jsonplaceholder.typicode.com/users", {
+    signal: controller.signal,
+  }) // return a Promise
+  .then((res) => { Success })
+  .catch((err) => { Failed });
 
-return (
-  <div>
-    {error && <p className="text-danger">{error}</p>}
-    {isLoading && <div className="spinner-border"></div>}
-    <ul className="list-group">
-      {users.map((user) => (
-        <li
-          key={user.id}
-          className="list-group-item d-flex justify-content-between"
-        >
-          {user.name}
-          <button
-            className="btn btn-outline-danger"
-            onClick={() => deleteUser(user)} // passing user
-          >
-            Delete
-          </button>
-        </li>
-      ))}
-    </ul>
-  </div>
-);
+// U: Update
+axios
+  .patch("https://jsonplaceholder.typicode.com/users/" + user.id, updatedUser)
+  .catch((err) => { Handel Only Filed If you do not want to handel success });
 
-// Adding User
-const addUser = () => {
-  const originalUser = [...users];
-  const newUser = { id: 0, name: "Subroto" };
-  setUsers([newUser, ...users]); // later setUsers replace this id: 0 user and set id: 11 user, you can check with useEffect and consol.log
-  axios
-    .post("https://jsonplaceholder.typicode.com/users", newUser) // Payo
-    // .then((res) => {
-    //   setUsers([res.data, ...users]); // It will replace previous one
-    // }); we can do this by destructiring and renaming
-    .then(({ data: savedUser }) => {
-      // it create code more readable
-      setUsers([savedUser, ...users]); // It will replace previous one
-    })
-    .catch((err) => {
-      setError(err.message);
-      setUsers(originalUser);
-    });
-};
-
-return (
-  <div>
-    {error && <p className="text-danger">{error}</p>}
-    {isLoading && <div className="spinner-border"></div>}
-    <button className="btn btn-primary my-3" onClick={addUser}>
-      Add
-    </button>
-    <ul className="list-group">
-      {users.map((user) => (
-        <li
-          key={user.id}
-          className="list-group-item d-flex justify-content-between"
-        >
-          {user.name}
-          <button
-            className="btn btn-outline-danger"
-            onClick={() => deleteUser(user)} // passing user
-          >
-            Delete
-          </button>
-        </li>
-      ))}
-    </ul>
-  </div>
-);
-
+// D: Delete User using Axios
+axios.delete("https://jsonplaceholder.typicode.com/users/" + user.id).catch((err) => {});
 ```
 
-```javascript
-// CRUD using axios full (include upper 2 operation here Delete & Add)
+## Cancelling Fetch request & Loading
+
+- Return of useEffect is clean up function
+  [Cancelling a Fetch Request](https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915908)
+- useEffect normally for fetching(axios.get()) data. create(), delete(), update()
+
+```jsx
 import axios, { CanceledError } from "axios";
-import "bootstrap/dist/css/bootstrap.css";
 import { useState, useEffect } from "react";
+
 interface User {
   id: number;
   name: string;
 }
-const AppFetchingData = () => {
+
+const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
 
-  // for first time data loda using useEffect
   useEffect(() => {
     setLoading(true);
     const controller = new AbortController();
@@ -1294,49 +1216,105 @@ const AppFetchingData = () => {
       .then((res) => {
         setUsers(res.data);
         setLoading(false);
-      })
+      }) // Success or No Error
       .catch((err) => {
-        if (err instanceof CanceledError) return; // If no data here then.
+        if (err instanceof CanceledError) return;
         setError(err.message);
         setLoading(false);
-      });
+      }); // Fail or Error
 
-    return () => controller.abort();
+    return () => controller.abort(); // Step-4; Clean Up function
   }, []);
 
+  return (
+    <div>
+      {error && <p className="text-danger">{error}</p>}
+      {isLoading && <div className="spinner-border"></div>}
+      <ul>
+        {users.map((user) => (
+          <li key={user.id}>{user.name}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default Users;
+```
+
+### CRUD using axios for User
+
+- Store all users in another variable before delete. Deleting Data, if error get back to original data
+- patch/put() you can use depending on backend
+- Need useEffect to control fetch. First time data loda using useEffect
+
+```jsx
+import axios, { CanceledError } from "axios";
+import { useState, useEffect } from "react";
+
+interface User {
+  id: number;
+  name: string;
+}
+
+const Users = () => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [error, setError] = useState("");
+  const [isLoading, setLoading] = useState(false);
+
+  // Read/View User. Need useEffect to control fetch. First time data loda using useEffect
+  useEffect(() => {
+    setLoading(true);
+    const controller = new AbortController();
+    axios
+      .get<User[]>("https://jsonplaceholder.typicode.com/users", {
+        signal: controller.signal,
+      })
+      .then((res) => {
+        setUsers(res.data);
+        setLoading(false);
+      }) // Success or No Error
+      .catch((err) => {
+        if (err instanceof CanceledError) return;
+        setError(err.message);
+        setLoading(false);
+      }); // Fail or Error
+
+    return () => controller.abort(); // Step-4; Clean Up function
+  }, []);
+
+  // Delete User (We need to handel any good response so there is no then() block)
   const deleteUser = (user: User) => {
-    const originalUser = [...users]; // Store all users in another variable before delete
-    setUsers(users.filter((u) => u.id != user.id));
+    const originalUsers = [...users];
+    setUsers(users.filter((u) => u.id !== user.id));
     axios
       .delete("https://jsonplaceholder.typicode.com/users/" + user.id)
       .catch((err) => {
         setError(err.message);
-        setUsers(originalUser); // If error occure then Get back to original user
+        setUsers(originalUsers);
       });
   };
+
+  // adding User (res: destructiring and renaming)
   const addUser = () => {
-    const originalUser = [...users];
+    const originalUsers = [...users];
     const newUser = { id: 0, name: "Subroto" };
     setUsers([newUser, ...users]); // later setUsers replace this id: 0 user and set id: 11 user, you can check with useEffect and consol.log
     axios
-      .post("https://jsonplaceholder.typicode.com/users", newUser) // Payo
-      // .then((res) => {
-      //   setUsers([res.data, ...users]); // It will replace previous one
-      // }); we can do this by destructiring and renaming
-      .then(({ data: savedUser }) => {
-        // it create code more readable
-        setUsers([savedUser, ...users]); // It will replace previous one
-      })
+      .post("https://jsonplaceholder.typicode.com/users", newUser)
+      .then(({ data: savedUser }) => setUsers([savedUser, ...users])) //res: destructiring and renaming, Increase readability
       .catch((err) => {
+        console.log(err);
         setError(err.message);
-        setUsers(originalUser);
+        setUsers(originalUsers);
       });
   };
+
+  // Update User (We need to handel any good response so there is no then() block)
   const updateUser = (user: User) => {
-    const originalUser = [...users];
+    const originalUsers = [...users];
     const updatedUser = { ...user, name: user.name + "!" };
     setUsers(users.map((u) => (user.id == u.id ? updatedUser : u)));
-    // patch/put() you can use depending on backend
     axios
       .patch(
         "https://jsonplaceholder.typicode.com/users/" + user.id,
@@ -1344,15 +1322,16 @@ const AppFetchingData = () => {
       )
       .catch((err) => {
         setError(err.message);
-        setUsers(originalUser);
+        setUsers(originalUsers);
       });
   };
+
   return (
     <div>
       {error && <p className="text-danger">{error}</p>}
       {isLoading && <div className="spinner-border"></div>}
-      <button className="btn btn-primary my-3" onClick={addUser}>
-        Add
+      <button className="btn btn-primary mb-2" onClick={addUser}>
+        Add User
       </button>
       <ul className="list-group">
         {users.map((user) => (
@@ -1360,17 +1339,17 @@ const AppFetchingData = () => {
             key={user.id}
             className="list-group-item d-flex justify-content-between"
           >
-            {user.name}
-            <div>
+            {`${user.id}. ${user.name}`}
+            <div className="">
               <button
-                className="btn btn-outline-secondary mx-1"
                 onClick={() => updateUser(user)}
+                className="btn btn-outline-danger my-1 mx-1"
               >
                 Update
               </button>
               <button
-                className="btn btn-outline-danger"
-                onClick={() => deleteUser(user)} // passing user
+                onClick={() => deleteUser(user)}
+                className="btn btn-outline-danger my-1"
               >
                 Delete
               </button>
@@ -1381,12 +1360,25 @@ const AppFetchingData = () => {
     </div>
   );
 };
+
+export default Users;
 ```
 
-axios.create() -> to create a pre-configured instance of Axios with default values for certain configuration options. This is particularly useful when you want to reuse a set of options across multiple requests in your application.
-[axious.create()](https://axios-http.com/docs/instance)
+# Generic Approace
 
-```javascript
+At this point we have all functionality for CRUD. Now we reduce code duplication and increase reusuability of the code.
+
+1. Api Client (axios config)
+2. User Service (endpoint)
+3. HTTP Serivce (User Service, Post Service - CRUD)
+4. Create Hook
+
+## Label 1: Api Client - Asios Instance (apiClient - Setting axios configaration object)
+
+[axious.create()](https://axios-http.com/docs/instance) - Axios Config
+
+```jsx
+// Basic Syntax
 import axios from "axios";
 
 // Create an instance(object) of Axios with custom configuration
@@ -1406,29 +1398,367 @@ apiInstance
   .catch((err) => {});
 ```
 
-axios.create() helps to avoid redundancy in your code and makes it easier to manage and update the configuration globally.
+## User and apiClient Example
 
-**Above code is enough to perform CRUD. But now we try to do some generick(common) approach, not for user**
+```jsx
+// user.tsx (Using apiClient)
+import apiClient, { CanceledError } from "../services/api-client";
+import { useState, useEffect } from "react";
 
-**It is little bit high thought think**
-**Here AppFetchingData is like App.js so we can not use it as data fetching**
-Componets is responsibe for returning markup and handeling interaction at high level
+interface User {
+  id: number;
+  name: string;
+}
 
-```javascript
-// here folder serices is about data not about UI
-// Transfer code from appFetchingData to api-client.ts
-// This codding is absolutly fine no need to create hook, but if we need to recreate same code then we can use it accross various component
-// Custom hook: Hook just a function, Return a object
-// It contains all methods for creating, Updateing, deleting user, so that App.js not not to warry abut data and can foucs on Markup and UI
-// receving two values as object, destructing here, one handel data another if browser close
+const Users = () => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [error, setError] = useState("");
+  const [isLoading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    const controller = new AbortController();
+    apiClient
+      .get<User[]>("/users", {
+        signal: controller.signal,
+      })
+      .then((res) => {
+        setUsers(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (err instanceof CanceledError) return;
+        setError(err.message);
+        setLoading(false);
+      });
+
+    return () => controller.abort();
+  }, []);
+
+  const deleteUser = (user: User) => {
+    const originalUsers = [...users];
+    setUsers(users.filter((u) => u.id !== user.id));
+    apiClient.delete("/users/" + user.id).catch((err) => {
+      setError(err.message);
+      setUsers(originalUsers);
+    });
+  };
+
+  const addUser = () => {
+    const originalUsers = [...users];
+    const newUser = { id: 0, name: "Subroto" };
+    setUsers([newUser, ...users]);
+    apiClient
+      .post("/users", newUser)
+      .then(({ data: savedUser }) => setUsers([savedUser, ...users]))
+      .catch((err) => {
+        console.log(err);
+        setError(err.message);
+        setUsers(originalUsers);
+      });
+  };
+
+  const updateUser = (user: User) => {
+    const originalUsers = [...users];
+    const updatedUser = { ...user, name: user.name + "!" };
+    setUsers(users.map((u) => (user.id == u.id ? updatedUser : u)));
+    apiClient.patch("/users/" + user.id, updatedUser).catch((err) => {
+      setError(err.message);
+      setUsers(originalUsers);
+    });
+  };
+
+  return (
+    <div>
+      {error && <p className="text-danger">{error}</p>}
+      {isLoading && <div className="spinner-border"></div>}
+      <button className="btn btn-primary mb-2" onClick={addUser}>
+        Add User
+      </button>
+      <ul className="list-group">
+        {users.map((user) => (
+          <li
+            key={user.id}
+            className="list-group-item d-flex justify-content-between"
+          >
+            {`${user.id}. ${user.name}`}
+            <div className="">
+              <button
+                onClick={() => updateUser(user)}
+                className="btn btn-outline-danger my-1 mx-1"
+              >
+                Update
+              </button>
+              <button
+                onClick={() => deleteUser(user)}
+                className="btn btn-outline-danger my-1"
+              >
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default Users;
+
+// services/api-client.ts (when there is markup there is tsx extension)
+import axios, { CanceledError } from "axios";
+
+export default axios.create({
+  baseURL: "https://jsonplaceholder.typicode.com",
+  //   headers: {
+  //     'api-key': '...' // Sometimes needed
+  //   }
+});
+
+export { CanceledError };
+```
+
+axios.create() helps to avoid redundancy in your code and makes it easier to manage and update the configuration globally.<br>
+
+## Label 2: myUser-service.ts/post-service.ts
+
+```jsx
+// user.tsx (import is based on file name "services/myUser-service" not export element)
+import { useState, useEffect } from "react";
+import myUserService, { User } from "../services/myUser-service";
+import { CanceledError } from "axios";
+
+const Users = () => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [error, setError] = useState("");
+  const [isLoading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    const { request, cancel } = myUserService.getAllUsers();
+    request
+      .then((res) => {
+        setUsers(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (err instanceof CanceledError) return;
+        setError(err.message);
+        setLoading(false);
+      });
+
+    return () => cancel();
+  }, []);
+
+  const deleteUser = (user: User) => {
+    const originalUsers = [...users];
+    setUsers(users.filter((u) => u.id !== user.id));
+    myUserService.deleteUser(user).catch((err) => {
+      setError(err.message);
+      setUsers(originalUsers);
+    });
+  };
+
+  const addUser = () => {
+    const originalUsers = [...users];
+    const newUser = { id: 0, name: "Subroto" };
+    setUsers([newUser, ...users]);
+
+    myUserService
+      .addUser(newUser)
+      .then(({ data: savedUser }) => setUsers([savedUser, ...users]))
+      .catch((err) => {
+        console.log(err);
+        setError(err.message);
+        setUsers(originalUsers);
+      });
+  };
+
+  const updateUser = (user: User) => {
+    const originalUsers = [...users];
+    const updatedUser = { ...user, name: user.name + "!" };
+    setUsers(users.map((u) => (user.id == u.id ? updatedUser : u)));
+    myUserService.updateUser(updatedUser, user.id).catch((err) => {
+      setError(err.message);
+      setUsers(originalUsers);
+    });
+  };
+
+  return (
+    // Same as before
+  );
+};
+
+export default Users;
+
+// myUser-service.ts
+import apiClient from "./api-client";
+
+export interface User {
+  id: number;
+  name: string;
+}
+
+class UserService {
+  getAllUsers() {
+    const controller = new AbortController();
+    const request = apiClient.get<User[]>("/users", {
+      signal: controller.signal,
+    });
+
+    return { request, cancel: () => controller.abort() };
+  }
+
+  deleteUser(user: User) {
+    return apiClient.delete("/users/" + user.id);
+  }
+
+  addUser(newUser: User) {
+    return apiClient.post("/users", newUser);
+  }
+
+  updateUser(updatedUser: User, userId: number) {
+    return apiClient.patch("/users/" + userId, updatedUser);
+  }
+}
+
+export default new UserService();
+```
+
+## Lable 3: Although myUserService instance use here but it use 'export default create("/users")' from myUserService.ts
+
+```jsx
+// Users.tsx
+import { useState, useEffect } from "react";
+import myUserService, { User } from "../services/myUser-service";
+import { CanceledError } from "axios";
+
+const Users = () => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [error, setError] = useState("");
+  const [isLoading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    const { request, cancel } = myUserService.getAll<User>();
+    request
+      .then((res) => {
+        setUsers(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (err instanceof CanceledError) return;
+        setError(err.message);
+        setLoading(false);
+      });
+
+    return () => cancel();
+  }, []);
+
+  const deleteUser = (user: User) => {
+    const originalUsers = [...users];
+    setUsers(users.filter((u) => u.id !== user.id));
+    myUserService.delete(user.id).catch((err) => {
+      setError(err.message);
+      setUsers(originalUsers);
+    });
+  };
+
+  const addUser = () => {
+    const originalUsers = [...users];
+    const newUser = { id: 0, name: "Subroto" };
+    setUsers([newUser, ...users]);
+
+    myUserService
+      .create(newUser)
+      .then(({ data: savedUser }) => setUsers([savedUser, ...users]))
+      .catch((err) => {
+        console.log(err);
+        setError(err.message);
+        setUsers(originalUsers);
+      });
+  };
+
+  const updateUser = (user: User) => {
+    const originalUsers = [...users];
+    const updatedUser = { ...user, name: user.name + "!" };
+    setUsers(users.map((u) => (user.id == u.id ? updatedUser : u)));
+    myUserService.update(updatedUser, user.id).catch((err) => {
+      setError(err.message);
+      setUsers(originalUsers);
+    });
+  };
+
+  return (
+    // Same as upper
+  );
+};
+
+// myUser-service.ts
+// create() is a function which is used to create new object passing endpoint from here
+import create from "./http-service";
+
+// just add export to use multiple place
+export interface User {
+  id: number;
+  name: string;
+}
+
+export default create("/users"); // function call and export, Only place to provide endpoint
+
+// http-service.ts
+// all are generic here. at the end we have create() arraow function
+import apiClient from "./api-client";
+
+interface Entity {
+  id: number;
+}
+
+class HttpService {
+  endPoint: string;
+
+  constructor(endPoint: string) {
+    this.endPoint = endPoint;
+  }
+
+  getAll<T>() {
+    const controller = new AbortController();
+    const request = apiClient.get<T[]>(this.endPoint, {
+      signal: controller.signal,
+    });
+
+    return { request, cancel: () => controller.abort() };
+  }
+
+  delete(id: number) {
+    return apiClient.delete(this.endPoint + "/" + id);
+  }
+
+  create<T>(entity: T) {
+    return apiClient.post(this.endPoint, entity);
+  }
+
+  update<T extends Entity>(entity: T, id: number) {
+    return apiClient.patch(this.endPoint + "/" + id, entity);
+  }
+}
+
+// export default new HttpService(); Instade of we can use this
+const create = (endPoint: string) => new HttpService(endPoint);
+export default create;
 ```
 
 ## Creating basic hook ( Hook just a function )
 
-A custom hook is a JavaScript function that utilizes React's built-in hooks (such as useState, useEffect, useContext, etc.) to encapsulate and share stateful logic between components. Custom hooks allow you to extract reusable logic from components and compose it into custom hooks that can be reused across multiple components.
+A custom hook is a JavaScript function that utilizes React's built-in hooks (such as useState, useEffect, useContext, etc.) to encapsulate and share stateful logic between components. Custom hooks allow you to extract reusable logic from components and compose it into custom hooks that can be reused across multiple components. <br>
+Hook have two think
+
+1. Export Function
+2. Return statement of that function
+
+BASIC Version
 
 ```jsx
-// BASIC Version
 // DataFetch.tsx
 import useFetch from "./useFetch";
 
@@ -1450,8 +1780,11 @@ const useFetch = (url: string) => {
 };
 
 export default useFetch;
+```
 
-// ADVANCE Version ------
+ADVANCE Version
+
+```jsx
 // DataFetch.tsx
 import useFetch from "./useFetch";
 
@@ -1521,136 +1854,65 @@ const useFetch = (url: string) => {
         setLoading(false);
       });
   }, [url]);
-  return { data, error, isLoading };
+  return { data, error, isLoading };   // hook is just a function, have a return values, Reuren state variable so that it can reuse
 };
 export default useFetch;
 ```
 
-<details>
-<summary>App.js (delete(3) Kaj ses) -> user-service/post-service(Only endpoint provide kore) -> http-service(handel all types CRUD, Main work done here apiClient.delete()) -> api-client(contain api configaration) -> axios(finally execute to server)</summary>
+## Creating a Custom Data Fetching Hook useUsers.ts (Fetch User list)
 
-```javascript
-//App.js
-const deleteUser = (user: User) => {
-  setUsers(users.filter((currentUser) => currentUser.id != user.id)); // Local delete
-  userService.delete(user.id).ther().catch(); // Server delete using api
+- At this point everything is alright. But a situation where another component need to fetch list of users. Then we have to declear 3 same state variable ie. users, error, isLoading.
+- Custom hook is used to share functionality accross different components.
+- Here useUsers.ts is just a regular module. Here we have funtion useUsers() and export that function
+- Observation: Hook normally component function er start theke return er ager js code process korar jonno alada function hisabe use hoy. So Copy from Users component and keep it in useUsers.ts
+
+- We can'n copy event handeler like addUser, deleteUser. Because event handeler is specific to this component.
+
+```jsx
+// Basic Structure of Hook. 1. Arrow Function, 2. Return Some state valriable, 3. Export Statement
+const useUsers = () => {
+  // Some Codding
+  return { users, error, isLoading, setUsers, setError };
 };
 
-//user-Service.ts; Import and Export Create()
-import create from "./http-service";
-export interface User {
-  id: number;
-  name: string;
-}
-export default create("/users");
-
-// http-service.ts Main CRUD done here
-delete(id: number) {
-    return apiClient.delete(this.endpoint + "/" + id); // Use apiClient
-}
-const create = (endpoint: string) => new httpService(endpoint);
-export default create;
-
-//api-client.ts
-import axios, { CanceledError } from "axios";
-export default axios.create({  // Default Export
-  baseURL: "https://jsonplaceholder.typicode.com",
-});
-export { CanceledError }; // Named Export
+export default useUsers;
 ```
 
-</details>
+```jsx
+// Users.tsx
+import useUsers from "../hooks/useUsers";
+import myUserService, { User } from "../services/myUser-service";
 
-<details>
-<summary>1. AppFetchingData.tsx</summary>
-
-```javascript
-import "bootstrap/dist/css/bootstrap.css";
-import userService, { User } from "./services/user-service";
-import useUsers from "./hooks/useUsers";
-
-const AppFetchingData = () => {
-  // This codding is absolutly fine no need to create hook, but if we need to recreate same code then we can use it accross various component
-  // Custom hook: Hook just a function, Return a object
+const Users = () => {
   const { users, error, isLoading, setUsers, setError } = useUsers();
+
+  // these 3 eventhandeler remain same. Nothing to do with hook
   const deleteUser = (user: User) => {
-    const originalUser = [...users]; // Store all users in another variable before delete
-    setUsers(users.filter((u) => u.id != user.id));
-    userService.delete(user.id).catch((err) => {
+    const originalUsers = [...users];
+    setUsers(users.filter((u) => u.id !== user.id));
+    myUserService.delete(user.id).catch((err) => {
       setError(err.message);
-      setUsers(originalUser); // If error occure then Get back to original user
+      setUsers(originalUsers);
     });
   };
-  const addUser = () => {
-    const originalUser = [...users];
-    const newUser = { id: 0, name: "Subroto" };
-    setUsers([newUser, ...users]); // later setUsers replace this id: 0 user and set id: 11 user, you can check with useEffect and consol.log
-    userService
-      .create(newUser)
-      .then(({ data: savedUser }) => {
-        // it create code more readable
-        setUsers([savedUser, ...users]); // It will replace previous one
-      })
-      .catch((err) => {
-        setError(err.message);
-        setUsers(originalUser);
-      });
-  };
-  const updateUser = (user: User) => {
-    const originalUser = [...users];
-    const updatedUser = { ...user, name: user.name + "!" };
-    setUsers(users.map((u) => (user.id == u.id ? updatedUser : u)));
-    // patch/put() you can use depending on backend
-    userService.update(user).catch((err) => {
-      setError(err.message);
-      setUsers(originalUser);
-    });
-  };
+
+
+  const addUser
+  const updateUser
 
   return (
-    <div>
-      {error && <p className="text-danger">{error}</p>}
-      {isLoading && <div className="spinner-border"></div>}
-      <button className="btn btn-primary my-3" onClick={addUser}>
-        Add
-      </button>
-      <ul className="list-group">
-        {users.map((user) => (
-          <li
-            key={user.id}
-            className="list-group-item d-flex justify-content-between"
-          >
-            {user.name}
-            <div>
-              <button
-                className="btn btn-outline-secondary mx-1"
-                onClick={() => updateUser(user)}
-              >
-                Update
-              </button>
-              <button
-                className="btn btn-outline-danger"
-                onClick={() => deleteUser(user)} // passing user
-              >
-                Delete
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+    // Same Before
   );
 };
-```
 
-</details>
+export default Users;
 
-<details>
-<summary>2. useUsers.ts (hook)</summary>
-
-```javascript
-import { useEffect, useState } from "react";
-import userService, { User } from "../services/user-service";
+// hooks/useUsers.ts (Export Function, Return statement of that function)
+// This codding is absolutly fine no need to
+// Custom hook: Hook just a function, Return a object
+import { useState, useEffect } from "react";
+import myUserService from "../services/myUser-service";
+import { User } from "../services/user-service";
 import { CanceledError } from "../services/api-client";
 
 const useUsers = () => {
@@ -1658,111 +1920,45 @@ const useUsers = () => {
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
 
-  // for first time data loda using useEffect
   useEffect(() => {
     setLoading(true);
-    // It contains all methods for creating, Updateing, deleting user, so that App.js not not to warry abut data and can foucs on Markup and UI
-    // receving two values as object, destructing here, one handel data another if browser close
-    const { request, cancel } = userService.getAll<User>();
+    const { request, cancel } = myUserService.getAll<User>();
     request
       .then((res) => {
         setUsers(res.data);
         setLoading(false);
       })
       .catch((err) => {
-        if (err instanceof CanceledError) return; // If no data here then.
+        if (err instanceof CanceledError) return;
         setError(err.message);
         setLoading(false);
       });
 
     return () => cancel();
   }, []);
-  // hook is just a function, have a return values, Reuren state variable so that it can reuse
-  // Return an object
+
   return { users, error, isLoading, setUsers, setError };
 };
 
 export default useUsers;
+
+// These 3 file is same as upper code
+// api-client.ts
+// user-service.ts
+// http-service.ts
 ```
 
-</details>
+In summary
 
-<details>
-<summary>3. user-service.ts</summary>
-
-```javascript
-import create from "./http-service";
-
-// just add export to use multiple place
-export interface User {
-  id: number;
-  name: string;
-}
-
-export default create("/users"); // Only place to provide endpoint
-```
-
-</details>
-
-<details>
-<summary>4. http-service.ts</summary>
-
-```javascript
-import apiClient, { CanceledError } from "./api-client";
-// try to do some generic (common) approach
-interface Entity {
-  id: number;
-}
-class HttpService {
-  endpoint: string;
-  constructor(endpoint: string) {
-    this.endpoint = endpoint;
-  }
-  // Here is nothing about users
-  getAll<T>() {
-    const controller = new AbortController();
-    const request = apiClient.get<T[]>(this.endpoint, {
-      signal: controller.signal,
-    });
-
-    return { request, cancel: () => controller.abort() }; // returning two values
-  }
-
-  delete(id: number) {
-    return apiClient.delete(this.endpoint + "/" + id);
-  }
-
-  create<T>(entity: T) {
-    return apiClient.post(this.endpoint, entity);
-  }
-
-  update<T extends Entity>(entity: T) {
-    return apiClient.patch(this.endpoint + "/" + entity.id, entity);
-  }
-}
-
-const create = (endpoint: string) => new HttpService(endpoint);
-export default create;
-```
-
-</details>
-<details>
-<summary>5. api-client.ts</summary>
-
-```javascript
-import axios, { CanceledError } from "axios";
-
-export default axios.create({
-  baseURL: "https://jsonplaceholder.typicode.com",
-  //   headers: {
-  //     'api-key': '...' // Sometimes needed
-  //   }
-});
-
-export { CanceledError };
-```
-
-</details>
+1. App.js->delete(3) Kaj ses
+   🠋
+2. user-service/post-service->Only endpoint provide kore
+   🠋
+3. http-service->handel all types CRUD, Main work done here
+   🠋
+4. api-client->contain api configaration object
+   🠋
+5. axios->finally execute to server
 
 # Part 2: React Intermidate Topics
 
@@ -2101,7 +2297,8 @@ import usePosts from "./hooks/usePosts";
 const PostList = () => {
   const pageSize = 10;
   const [page, setPage] = useState(1);
-  const { data: posts, error, isLoading } = usePosts({ page, pageSize });
+  // isFetching: is more conviniyent
+  const { data: posts, error, isFetching, isLoading } = usePosts({ page, pageSize });
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>{error.message}</p>;
@@ -2126,7 +2323,7 @@ const PostList = () => {
         onClick={() => setPage(page + 1)}
         className="btn btn-primary mt-3 ms-3"
       >
-        Next
+        {isFetching ? "Loading" : "Next"}
       </button>
     </>
   );
@@ -2169,6 +2366,8 @@ export default usePosts;
 
 ## - Infinite queries "useInfiniteQuery" Hook (Littl bit tricky and difficult)
 
+- When click on 1.fetchNextPage() though a button click, then 2.getNextPageParam() function calculate next page param pass to 3.queryFn() argument
+
 ```jsx
 // PostList.tsx
 import usePosts from "./hooks/usePosts";
@@ -2205,7 +2404,9 @@ const PostList = () => {
     </>
   );
 };
+```
 
+```jsx
 // usePosts.ts
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -2224,7 +2425,7 @@ interface PostQuery {
 const usePosts = (query: PostQuery) =>
   useInfiniteQuery<Post[], Error>({
     queryKey: ["posts", query],
-    queryFn: ({ pageParam = 1 }) =>
+    queryFn: ({ pageParam = 1 }) => //receive this form getNextPageParam()
       axios
         .get("https://jsonplaceholder.typicode.com/posts", {
           params: {
@@ -2237,7 +2438,7 @@ const usePosts = (query: PostQuery) =>
     keepPreviousData: true, // Keep data of current page instade of showing loading
     getNextPageParam: (lastPage, allPages) => {
       // 1->2   https://prnt.sc/0jev3TFIYJ1K  \ Array[Post[] Post[] Post[]]  array.length 3
-      return lastPage.length > 0 ? allPages.length + 1 : undefined;
+      return lastPage.length > 0 ? allPages.length + 1 : undefined; // it will pass to queryFn: ({pageParam}) as pageParam
     },
   });
 export default usePosts;
@@ -2249,20 +2450,14 @@ The useMutation hook is used for handling mutations, which are operations that m
 
 (After mutation (add to backend(api) we can invalidate cache and refetch or add data directly to cache)) <br >
 
-Updating Cached Data: Then, you can use the setQueryData function to update the cached data for a specific query:
+Updating Cached Data: Then, you can use the setQueryData function to update the cached data for a specific query: <br>
+
+- mutate(itemObject) pass argument to mutationFn()
 
 ```jsx
-const { data, error, isError, isIdle, isPending, isPaused, isSuccess, failureCount, failureReason, mutate, mutateAsync, reset, status, submittedAt, variables} =
-useMutation({ mutationFn, gcTime, mutationKey, networkMode, onError, onMutate, onSettled, onSuccess, retry, retryDelay, throwOnError, meta, })
-
-mutate(variables, {  // Function call
-  onError,
-  onSettled,
-  onSuccess,
-})
-
-const addTodo = useMutation<Todo, Error, Todo>({  // step 2
-  mutationFn: (todo: Todo) => // step 3: mutationFn
+// theory
+const addTodo = useMutation<Todo, Error, Todo>({
+  mutationFn: (todo: Todo) => // step 2: mutationFn(), received form  mutate() function
     axios
       .post<Todo>("https://jsonplaceholder.typicode.com/todos", todo)
       .then((res) => res.data),
@@ -2273,19 +2468,12 @@ const addTodo = useMutation<Todo, Error, Todo>({  // step 2
   },
 });
 
-addTodo.mutate({ // Step 1
+addTodo.mutate({ // Step 1: Pass object to mutationFn()
   id: 0,
   title: ref.current?.value,
   completed: false,
   userId: 1,
 });
-```
-
-```jsx
-// To update cache data directly
-import { useQueryClient } from "react-query";
-const queryClient = useQueryClient();
-queryClient.setQueryData("key", newData);
 ```
 
 ```jsx
@@ -2358,6 +2546,7 @@ const addTodo = useMutation<Todo, Error, Todo>({})
 ## - Showing mutation progress (useMutation has a return type isLoading)
 
 ```jsx
+// Need not to do anything. useMutation return object which contains isLoading
 <button disabled={addTodo.isLoading} className="btn btn-primary">
   {addTodo.isLoading ? "Loading..." : "Add"}
 </button>
@@ -2365,7 +2554,9 @@ const addTodo = useMutation<Todo, Error, Todo>({})
 
 ## - Optimistic updates (TodoForm.tsx) Difficult (Can watch again)
 
-onMutate: instant cache update and return context of previous data, onError: use previousTodos of context to update query cache, onSuccess: replace newTodo with savedTodo from backend <br>
+onMutate: Call instantly when click on button. Not wait for server response. instant cache update and return context of previous data, <br>
+onSuccess: When server response come back. We update cache with variable now need to replace with response comeback from server.<br>
+onError: use previousTodos of context to update query cache<br>
 Context: is the object to pass data in between callbacks(onMutate, onSuccess, onError).
 
 ```jsx
@@ -2396,7 +2587,7 @@ const TodoForm = () => {
 
     onSuccess: (savedTodo, newTodo) => {
       queryClient.setQueryData<Todo[]>(["todos"], (todos) =>
-        todos?.map((todo) => (todo === newTodo ? savedTodo : todo))
+        todos?.map((todo) => (todo.id === newTodo.id ? savedTodo : todo))
       );
     },
 
@@ -2441,57 +2632,17 @@ const TodoForm = () => {
 };
 ```
 
-## - Creating a custom mutaion hook (useAddTodo.ts new hook)
+## - Creating a custom mutaion hook (useAddTodo.ts new hook) (Level 0: Generic hook is just cut & paste code inside function )
 
-Updating UI: Component
+Updating UI: Component<br>
 Data Management: Hook
 
 ```jsx
-// TodoForm.tsx
-import { useRef } from "react";
-import useAddTodo from "./hooks/useAddTodo";
-
-const TodoForm = () => {
-  const ref = useRef<HTMLInputElement>(null);
-  const addTodo = useAddTodo(() => {
-    if (ref.current) ref.current.value = "";
-  });
-
-  return (
-    <>
-      {addTodo.error && (
-        <div className="alert alert-danger">{addTodo.error.message}</div>
-      )}
-      <form
-        className="row mb-3"
-        onSubmit={(event) => {
-          event.preventDefault();
-
-          if (ref.current && ref.current.value)
-            addTodo.mutate({
-              id: 0,
-              title: ref.current?.value,
-              completed: false,
-              userId: 1,
-            });
-        }}
-      >
-        <div className="col">
-          <input ref={ref} type="text" className="form-control" />
-        </div>
-        <div className="col">
-          <button disabled={addTodo.isLoading} className="btn btn-primary">
-            {addTodo.isLoading ? "Loading..." : "Add"}
-          </button>
-        </div>
-      </form>
-    </>
-  );
-};
-
-// constants.ts
+// constants.ts (Keetp thing in one place)
 export const CACHE_KEY_TODOS = ["todos"];
+```
 
+```jsx
 // useAddTodo.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Todo } from "./useTodos";
@@ -2539,31 +2690,55 @@ const addTodo = (onAdd: () => void) => {
 };
 ```
 
-## - Creating a Reusable API Client (api-client.ts) createing a class for CRUD
+```jsx
+// TodoForm.tsx
+import { useRef } from "react";
+import useAddTodo from "./hooks/useAddTodo";
+
+const TodoForm = () => {
+  const ref = useRef < HTMLInputElement > null;
+  const addTodo = useAddTodo(() => {
+    if (ref.current) ref.current.value = "";
+  });
+
+  return (
+    <>
+      {addTodo.error && (
+        <div className="alert alert-danger">{addTodo.error.message}</div>
+      )}
+      <form
+        className="row mb-3"
+        onSubmit={(event) => {
+          event.preventDefault();
+
+          if (ref.current && ref.current.value)
+            addTodo.mutate({
+              id: 0,
+              title: ref.current?.value,
+              completed: false,
+              userId: 1,
+            });
+        }}
+      >
+        <div className="col">
+          <input ref={ref} type="text" className="form-control" />
+        </div>
+        <div className="col">
+          <button disabled={addTodo.isLoading} className="btn btn-primary">
+            {addTodo.isLoading ? "Loading..." : "Add"}
+          </button>
+        </div>
+      </form>
+    </>
+  );
+};
+```
+
+## - Creating a Reusable API Client (api-client.ts) createing a class for CRUD ((Generic)Level 1: api-client.ts there is common basa url and axios config)
 
 - In the case of CRUD is more convenient using Class
 
 ```jsx
-// useTodos.ts (A) just passing function refreence apiClient.getAll, not function call
-import APIClient from "../services/api-client";
-
-const apiClient = new APIClient<Todo>("/todos"); // creating object
-
-export interface Todo {
-  id: number;
-  title: string;
-  userId: number;
-  completed: boolean;
-}
-
-const useTodos = () => {
-  return useQuery<Todo[], Error>({
-    queryKey: CACHE_KEY_TODOS,
-    queryFn: apiClient.getAll, // We just need to pass reference of function
-    staleTime: 10 * 1000, // 10s
-  });
-};
-
 // api-client.ts Class component is easy to create using constractor
 import axios, { CanceledError } from "axios";
 
@@ -2585,72 +2760,219 @@ class APIClient<T> {
     return axiosInstance.post<T>(this.endPoint, data).then((res) => res.data);
   };
 }
+
+export default APIClient; // Exporting APIClient
 ```
 
-## -
-
 ```jsx
+// useTodos.ts - Hook, just passing function refreence apiClient.getAll, not function call
+import APIClient from "../services/api-client";
 
+const apiClient = new APIClient<Todo>("/todos"); // creating object
+
+export interface Todo {
+  id: number;
+  title: string;
+  userId: number;
+  completed: boolean;
+}
+
+const useTodos = () => {
+  return useQuery<Todo[], Error>({
+    queryKey: CACHE_KEY_TODOS,
+    queryFn: apiClient.getAll, // We just need to pass reference of function| not like ()=>apiClient.getAll
+    staleTime: 10 * 1000, // 10s
+  });
+};
 ```
 
-## -
-
 ```jsx
+// useAddPost.tsx (Hook)
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import APIClient, { Post } from "../rq-services/api-client";
 
+const apiClient = new APIClient<Post>("/posts");
+
+interface AddPostContext {
+  previousPosts: Post[];
+}
+
+const useAddPost = () => {
+  const queryClient = useQueryClient();
+  return useMutation<Post, Error, Post, AddPostContext>({
+    mutationFn: apiClient.post,
+
+    onMutate(newPost: Post) {
+      const previousPosts = queryClient.getQueryData<Post[]>(["posts"]) || [];
+      queryClient.setQueryData<Post[]>(["posts"], (posts) => [
+        newPost,
+        ...(posts || []),
+      ]);
+      return { previousPosts };
+    },
+
+    onSuccess: (savedPost, newPost) => {
+      console.log(savedPost);
+      queryClient.setQueryData<Post[]>(["posts"], (posts) =>
+        posts?.map((post) => (post.id == newPost.id ? savedPost : post))
+      );
+    },
+
+    onError: (error, newPost, context) => {
+      if (!context) return;
+
+      queryClient.setQueryData(["posts"], context.previousPosts);
+    },
+  });
+};
+
+export default useAddPost;
 ```
 
-## -
+## - Creating different services like postServices.ts, todoService.ts (todoService.ts) ((Generic)Level 2: postService.ts )
+
+- Reduce these two lines from upper code
+- Import APIClient and export instance with enpoint
 
 ```jsx
-
+import APIClient, { Post } from "../rq-services/api-client";
+const apiClient = new APIClient() < Post > "/posts";
 ```
 
-## -
-
 ```jsx
+// postService.ts (Just import APIClient and export instance with enpoint)
+import APIClient from "./api-client";
 
+export interface Post {
+  id: number;
+  title: string;
+  userId: number;
+}
+
+export default new APIClient() < Post > "/posts";
 ```
 
-## -
-
 ```jsx
+// todoService.ts (For Todos)
+import APIClient from "./api-client";
 
+export interface Todo {
+  id: number;
+  title: string;
+  userId: number;
+  completed: boolean;
+}
+export default new APIClient<Todo>("/todos");
+
+// useTodos.ts Just import todoService, {Todo} from todoService.ts and use it
+import { useQuery } from "@tanstack/react-query";
+import { CACHE_KEY_TODOS } from "../constants";
+import todoService, { Todo } from "../services/todoService";
+
+const useTodos = () => {
+  return useQuery<Todo[], Error>({
+    queryKey: CACHE_KEY_TODOS,
+    queryFn: todoService.getAll, // We just need to pass reference of function
+    staleTime: 10 * 1000, // 10s
+  });
+};
 ```
 
-## -
-
 ```jsx
+// useAddTodo.ts
+import todoService, { Todo } from "../services/todoService";
 
+interface AddTodoContex {
+  previousTodos: Todo[];
+}
+
+const addTodo = (onAdd: () => void) => {
+  const queryClient = useQueryClient();
+  return useMutation<Todo, Error, Todo, AddTodoContex>({
+    mutationFn: todoService.post,
+..............................................
+.............
+};
 ```
 
-## -
+## - Creating a reusuable HTTP service. postService.ts -> httpService.ts ((Generic)Level 3)
+
+- In upper code we can separate api-client
+- In Summary
+  - api-client.ts
+  - http-service.ts
+  - postService.ts
+  - usePosts.ts (hook)
+- TypeScript type annotations place: 1. myFn<T>(), 2. myFn<T>, 3. <T>()
 
 ```jsx
+// api-client.ts
+import axios from "axios";
 
+const apiClient = axios.create({
+  baseURL: "https://jsonplaceholder.typicode.com",
+});
+
+export default apiClient;
 ```
 
-## -
-
 ```jsx
+// http-service.ts (All Generic Type T)
+import apiClient from "./api-client";
 
+class HTTPService<T> {
+  endPoint: string;
+
+  constructor(endPoint: string) {
+    this.endPoint = endPoint;
+  }
+
+  getAll = () => {
+    return apiClient.get<T[]>(this.endPoint).then((res) => res.data);
+  };
+
+  post = (newData: T) => {
+    return apiClient.post<T>(this.endPoint, newData).then((res) => res.data);
+  };
+}
+
+// export default new HttpService(); Instade of we can use this
+const create = <T>(endPoint: string) => new HTTPService<T>(endPoint);
+export default create;
+Or, export default <T>(endPoint: string) => new HTTPService<T>(endPoint);
 ```
 
-## -
-
 ```jsx
+// postService.ts
+import create from "./http-service";
 
+export interface Post {
+  id: number;
+  title: string;
+  userId: number;
+}
+
+export default create < Post > "/posts"; // export default create<Post>("/posts");
 ```
 
-## -
-
 ```jsx
+// usePosts.ts
+import { useQuery } from "@tanstack/react-query";
+import postService, { Post } from "../rq-services/postService";
 
-```
+interface PostQuery {
+  pageSize: number;
+}
 
-## -
+const usePosts = ({ pageSize }: PostQuery) => {
+  return useQuery<Post[], Error>({
+    queryKey: ["posts"],
+    queryFn: postService.getAll,
+    keepPreviousData: true,
+  });
+};
 
-```jsx
-
+export default usePosts;
 ```
 
 ## -
