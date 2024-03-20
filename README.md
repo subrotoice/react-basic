@@ -2587,9 +2587,47 @@ class APIClient<T> {
 }
 ```
 
-## -
+## - Creating a reusuable HTTP service (todoService.ts)
 
 ```jsx
+// useTodos.ts Just import todoService, {Todo} from todoService.ts and use it
+import { useQuery } from "@tanstack/react-query";
+import { CACHE_KEY_TODOS } from "../constants";
+import todoService, { Todo } from "../services/todoService";
+
+const useTodos = () => {
+  return useQuery<Todo[], Error>({
+    queryKey: CACHE_KEY_TODOS,
+    queryFn: todoService.getAll, // We just need to pass reference of function
+    staleTime: 10 * 1000, // 10s
+  });
+};
+
+// useAddTodo.ts
+import todoService, { Todo } from "../services/todoService";
+
+interface AddTodoContex {
+  previousTodos: Todo[];
+}
+
+const addTodo = (onAdd: () => void) => {
+  const queryClient = useQueryClient();
+  return useMutation<Todo, Error, Todo, AddTodoContex>({
+    mutationFn: todoService.post,
+..............................................
+.............
+};
+
+// todoService.ts
+import APIClient from "./api-client";
+
+export interface Todo {
+  id: number;
+  title: string;
+  userId: number;
+  completed: boolean;
+}
+export default new APIClient<Todo>("/todos");
 
 ```
 
