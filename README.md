@@ -2539,10 +2539,52 @@ const addTodo = (onAdd: () => void) => {
 };
 ```
 
-## -
+## - Creating a Reusable API Client (api-client.ts) createing a class for CRUD
+
+- In the case of CRUD is more convenient using Class
 
 ```jsx
+// useTodos.ts (A) just passing function refreence apiClient.getAll, not function call
+import APIClient from "../services/api-client";
 
+const apiClient = new APIClient<Todo>("/todos"); // creating object
+
+export interface Todo {
+  id: number;
+  title: string;
+  userId: number;
+  completed: boolean;
+}
+
+const useTodos = () => {
+  return useQuery<Todo[], Error>({
+    queryKey: CACHE_KEY_TODOS,
+    queryFn: apiClient.getAll, // We just need to pass reference of function
+    staleTime: 10 * 1000, // 10s
+  });
+};
+
+// api-client.ts Class component is easy to create using constractor
+import axios, { CanceledError } from "axios";
+
+const axiosInstance = axios.create({
+  baseURL: "https://jsonplaceholder.typicode.com",
+});
+
+class APIClient<T> {
+  endPoint: string;
+  constructor(endPoint: string) {
+    this.endPoint = endPoint;
+  }
+
+  getAll = () => {
+    return axiosInstance.get<T[]>(this.endPoint).then((res) => res.data);
+  };
+
+  post = (data: T) => {
+    return axiosInstance.post<T>(this.endPoint, data).then((res) => res.data);
+  };
+}
 ```
 
 ## -
