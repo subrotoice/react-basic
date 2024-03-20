@@ -10,18 +10,23 @@ import "./index.css";
 import BackEndConnection from "./BackEndConnection";
 import LabTest from "./LabTest";
 import AppReactQuery from "./AppReactQuery";
+import MyApp from "./MyApp";
 
 const queryClient = new QueryClient(); // this line added
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <MyApp />
+      <ReactQueryDevtools />
+    </QueryClientProvider>
     {/* <LabTest /> */}
     {/* <AppFetchingData /> */}
     {/* <App2 /> */}
-    <QueryClientProvider client={queryClient}>
+    {/* <QueryClientProvider client={queryClient}>
       <AppReactQuery />
       <ReactQueryDevtools />
-    </QueryClientProvider>
+    </QueryClientProvider> */}
     {/* <BackEndConnection /> */}
   </React.StrictMode>
 );
