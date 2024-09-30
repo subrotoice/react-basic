@@ -2366,7 +2366,10 @@ export default usePosts;
 
 ## - Infinite queries "useInfiniteQuery" Hook (Littl bit tricky and difficult)
 
-- When click on 1.fetchNextPage() though a button click, then 2.getNextPageParam() function calculate next page param pass to 3.queryFn() argument
+- When click on
+  1.fetchNextPage() though a button click, then
+  2.getNextPageParam() function calculate next page param pass to
+  3.queryFn() argument
 
 ```jsx
 // PostList.tsx
@@ -2975,13 +2978,119 @@ const usePosts = ({ pageSize }: PostQuery) => {
 export default usePosts;
 ```
 
-## -
+# React Router
+
+```bash
+npm install react-router-dom
+```
+
+```jsx
+// routing/routers.tsx (convension) | You can use any name
+import { createBrowserRouter } from "react-router-dom";
+import About from "./About";
+import Contact from "./Contact";
+import HomePage from "./HomePage";
+import UserDetailsPage from "./UserDetailsPage";
+
+const router = createBrowserRouter([
+  { path: "/", element: <HomePage /> },
+  { path: "/contact", element: <Contact /> },
+  { path: "/about", element: <About /> },
+  { path: "/users/:id", element: <UserDetailsPage /> },
+]);
+
+export default router;
+```
+
+```jsx
+// main.tsx
+import { RouterProvider } from "react-router-dom";
+import router from "./routing/router";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>
+);
+```
+- Nevegation
+
+```jsx
+// HomePage.tsx
+<Link to="/about" className="text-blue-500 hover:underline">
+  Contact
+</Link>
+<Link to="/contact" className="text-blue-500 hover:underline">
+  Contact
+</Link>
+```
+- Pragrametically redirect to a page. Hook: useNavigate, navigate("/") 
+```jsx
+import { useNavigate } from "react-router-dom";
+
+const SubmitForm = () => {
+  const navigate = useNavigate();
+  return (
+    <div>
+      <form
+        action=""
+        onSubmit={(e) => {
+          e.preventDefault();
+          navigate("/");
+        }}
+      >
+        <button type="submit">Submit</button>
+      </form>
+      <a href="/">HomePage</a>
+    </div>
+  );
+};
+
+```
+
+### Passing data with route parameter: user/1
+```jsx
+<Link to="/users/1">User 1</Link>
+<Link to={`/user/${user.id}`}>User 1</Link>
+```
+
+### Getting Data about the Current Route: useParams, useSearchParams, useLocation
+```jsx
+// UserDetailsPage.tsx
+import { useLocation, useParams, useSearchParams } from "react-router-dom";
+
+const UserDetailsPage = () => {
+  const params = useParams();
+  const [searchParams, SetSearchPrams] = useSearchParams();
+  const location = useLocation();
+
+  // http://localhost:5174/users/1?teacher=subroto
+  console.log(params); // 1
+  console.log(searchParams.toString()); // teacher=subroto
+  console.log(searchParams.get("teacher")); // subroto
+  console.log(location); // { "pathname": "/users/1", "search": "?teacher=subroto" ......}
+
+  return (
+    <div>
+      <Header />
+      UserDetailsPage
+    </div>
+  );
+};
+```
+
+### Nested Routes
+```jsx
+
+```
 
 ```jsx
 
 ```
 
-## -
+```jsx
+
+```
 
 ```jsx
 

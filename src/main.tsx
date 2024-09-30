@@ -11,15 +11,21 @@ import BackEndConnection from "./BackEndConnection";
 import LabTest from "./LabTest";
 import AppReactQuery from "./AppReactQuery";
 import MyApp from "./MyApp";
+import PostList from "./react-query/PostList";
+import { RouterProvider } from "react-router-dom";
+import router from "./routing/router";
 
 const queryClient = new QueryClient(); // this line added
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <MyApp />
+      {/* <MyApp /> */}
+      {/* <PostList /> */}
+      <RouterProvider router={router} />
       <ReactQueryDevtools />
     </QueryClientProvider>
+
     {/* <LabTest /> */}
     {/* <AppFetchingData /> */}
     {/* <App2 /> */}

@@ -16,6 +16,8 @@ const PostList = () => {
           <React.Fragment key={index}>
             {page.map((post) => (
               <li key={post.id} className="list-group-item">
+                {post.id}
+                {". "}
                 {post.title}
               </li>
             ))}

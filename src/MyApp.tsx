@@ -6,8 +6,8 @@ import PostForm from "./react-query/PostForm";
 
 const MyApp = () => {
   const pageSize = 10;
-  const { data, error, isLoading } = usePosts({ pageSize });
-
+  const { data, error, isLoading, fetchNextPage } = usePosts({ pageSize });
+  console.log(data);
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>{error.message}</p>;
 
@@ -15,12 +15,19 @@ const MyApp = () => {
     <>
       <PostForm />
       <ul className="list-group">
-        {data.map((post) => (
-          <li key={post.id} className="list-group-item">
-            {`${post.id} ${post.title}`}
-          </li>
+        {data.pages.map((page, index) => (
+          <React.Fragment key={index}>
+            {page.map((post) => (
+              <li key={post.id} className="list-group-item">
+                {post.id}
+                {". "}
+                {post.title}
+              </li>
+            ))}
+          </React.Fragment>
         ))}
       </ul>
+      <button onClick={() => fetchNextPage()}>Load More</button>
     </>
   );
 };
