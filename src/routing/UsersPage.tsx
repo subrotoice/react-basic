@@ -1,8 +1,12 @@
 import React from "react";
 import Header from "../components/HomePage/Header";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Navigate, Outlet } from "react-router-dom";
+import useAuth from "./useAuth";
 
 const UsersPage = () => {
+  const loginUser = useAuth();
+  if (!loginUser.user) return <Navigate to="/login" />;
+
   return (
     <div>
       <Header />

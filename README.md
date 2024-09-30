@@ -2978,14 +2978,16 @@ const usePosts = ({ pageSize }: PostQuery) => {
 export default usePosts;
 ```
 
-# React Router
+# Ch-3: React Router
 
 ```bash
 npm install react-router-dom
 ```
-**routing/routers.tsx: For creating routes and main work, linked that path in Link tag**
+
+**1. routing/routers.tsx: For creating routes, 2. linked that path in Link or NavLink**
+
 ```jsx
-// routing/routers.tsx (convension) | You can use any name
+// Step2: routing/routers.tsx (convension) | You can use any name and any place
 import { createBrowserRouter } from "react-router-dom";
 import About from "./About";
 import Contact from "./Contact";
@@ -3003,7 +3005,7 @@ export default router;
 ```
 
 ```jsx
-// main.tsx
+// Step3: main.tsx
 import { RouterProvider } from "react-router-dom";
 import router from "./routing/router";
 
@@ -3013,10 +3015,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   </React.StrictMode>
 );
 ```
+
 - Nevegation
 
 ```jsx
-// HomePage.tsx
+// Step4: HomePage.tsx | Good to Go
 <Link to="/about" className="text-blue-500 hover:underline">
   Contact
 </Link>
@@ -3024,7 +3027,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   Contact
 </Link>
 ```
-- Pragrametically redirect to a page. Hook: useNavigate, navigate("/") 
+
+- Programmatically redirect to a page. Hook: useNavigate, navigate("/")
+
 ```jsx
 import { useNavigate } from "react-router-dom";
 
@@ -3045,16 +3050,17 @@ const SubmitForm = () => {
     </div>
   );
 };
-
 ```
 
 ### Passing data with route parameter: user/1
+
 ```jsx
 <Link to="/users/1">User 1</Link>
 <Link to={`/user/${user.id}`}>User 1</Link>
 ```
 
 ### Getting Data about the Current Route: useParams, useSearchParams, useLocation
+
 ```jsx
 // UserDetailsPage.tsx
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
@@ -3080,8 +3086,9 @@ const UserDetailsPage = () => {
 ```
 
 ### Nested Routes: Createing a layout.txt in which all page load by replacing <Outlet />
+
 ```jsx
-// Layout.tsx | Here UserDetailsPage, Contact, About page render in the Outlet of Layout Page
+// Step1: Layout.tsx | Here UserDetailsPage, Contact, About page render in the Outlet of Layout Page
 import Header from "../components/HomePage/Header";
 import { Outlet } from "react-router-dom";
 
@@ -3094,7 +3101,7 @@ const Layout = () => {
   );
 };
 
-// routing/router.tsx
+// Step2: routing/router.tsx
 const router = createBrowserRouter([
   {
     path: "/",
@@ -3108,7 +3115,8 @@ const router = createBrowserRouter([
 ]);
 ```
 
-### Exercise: Working with Nested Routes
+### Exercise: Working with Nested Routes where user load from UsersPage
+
 ```jsx
 // UsersPage.tsx as layout, children of this layout render in <Outlet />
 import Header from "../components/HomePage/Header";
@@ -3144,13 +3152,159 @@ const router = createBrowserRouter([
 ]);
 ```
 
+### Styling active links
+
+- Use Navlink instead of Link. active class will be added automatically
+
+```jsx
+<NavLink to="/users/1" className="px-1 font-bold">
+  User 1
+</NavLink>
+```
+
+- To change this active to other name like current.
+
+```jsx
+<NavLink to="/contact" className={(isActive) => (isActive ? "current" : "")}>
+  Contact
+</NavLink>
+```
+
+### Handeling Errors
+
+```jsx
+import { isRouteErrorResponse, useRouteError } from "react-router-dom";
+import Header from "../components/HomePage/Header";
+
+const ErrorPage = () => {
+  const routeError = useRouteError(); // get the route error
+  return (
+    <div>
+      <Header />
+      <h1>Oops...</h1>
+      <p>Sorry! Unexprected error happened</p>
+      <p>
+        {isRouteErrorResponse(routeError)
+          ? "Invalide Page" // true if invalide page, contact - contacttt(invalide page)
+          : "Unexpected Error"}
+      </p>
+    </div>
+  );
+};
+
+// we can throw error from a page
+throw new Error("Something went wrong");
+```
+
+### Private Routes | Authentication
+
+```jsx
+// useAUth.ts to simulate authentication
+const useAuth = () => ({ user: { id: 1, name: "Subroto" } });
+
+// const useAuth = () => ({ user: null });
+
+export default useAuth;
+```
+
+```jsx
+// UserPage.tsx
+const UsersPage = () => {
+  const loginUser = useAuth();
+  if (!loginUser.user) return <Navigate to="/login" />;
+
+  return (
+    <div>
+      <Header />
+      ...................
+    </div>
+  );
+};
+```
+
+```jsx
+// router.tsx
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    errorElement: <ErrorPage />,
+    children: [
+      { path: "/", element: <HomePage /> },
+      { path: "/contact", element: <Contact /> },
+      { path: "/about", element: <About /> },
+      { path: "/login", element: <Login /> },
+    ],
+  },
+  {
+    .............
+  },
+]);
+```
+
+### Private Layout Route: Able to keep all business logic in a single page
+
+```jsx
+// PrivateRoutes.tsx | Its a layout, so we can control all route from one place
+const PrivateRoutes = () => {
+  const loginUser = useAuth();
+  if (!loginUser.user) return <Navigate to="/login" />;
+
+  return (
+    <div>
+      <Header />
+      <Outlet />
+    </div>
+  );
+};
+```
+
+```jsx
+// router.tsx
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    errorElement: <ErrorPage />,
+    children: [
+      { path: "/", element: <HomePage /> },
+      { path: "/contact", element: <Contact /> },
+      { path: "/about", element: <About /> },
+      { path: "/login", element: <Login /> },
+    ],
+  },
+  {
+    element: <PrivateRoutes />,
+    children: [
+      {
+        path: "/users",
+        element: <UsersPage />,
+        children: [{ path: ":id", element: <UserDetailsPage /> }],
+      },
+    ],
+  },
+]);
+```
+
+###
+
 ```jsx
 
 ```
 
+###
+
 ```jsx
 
 ```
+
+###
+
+```jsx
+
+```
+
+###
 
 ```jsx
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -21,18 +21,18 @@ const Header = () => {
           <span className="ml-3 text-xl">Tailblocks</span>
         </a>
         <nav className="md:ml-auto md:mr-auto flex flex-wrap items-center text-base justify-center">
-          <Link to="/" className="px-1 font-bold">
+          <NavLink to="/" className="px-1 font-bold">
             Home
-          </Link>
-          <Link to="/contact" className="px-1 font-bold">
+          </NavLink>
+          <NavLink to="/contact" className={(isActive)=>isActive?"px-1 font-bold current":"px-1 font-bold"}>
             Contact
-          </Link>
-          <Link to="/about" className="px-1 font-bold">
+          </NavLink>
+          <NavLink to="/about" className="px-1 font-bold">
             About
-          </Link>
-          <Link to="/users/1" className="px-1 font-bold">
+          </NavLink>
+          <NavLink to="/users/1" className="px-1 font-bold">
             User 1
-          </Link>
+          </NavLink>
         </nav>
         <button className="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">
           Button

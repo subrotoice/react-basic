@@ -5,3 +5,7 @@
 body {
   padding: 20px;
 }
+
+.active {
+  background-color: antiquewhite;
+}
