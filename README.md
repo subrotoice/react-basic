@@ -2983,7 +2983,7 @@ export default usePosts;
 ```bash
 npm install react-router-dom
 ```
-
+**routing/routers.tsx: For creating routes and main work, linked that path in Link tag**
 ```jsx
 // routing/routers.tsx (convension) | You can use any name
 import { createBrowserRouter } from "react-router-dom";
@@ -3079,9 +3079,69 @@ const UserDetailsPage = () => {
 };
 ```
 
-### Nested Routes
+### Nested Routes: Createing a layout.txt in which all page load by replacing <Outlet />
 ```jsx
+// Layout.tsx | Here UserDetailsPage, Contact, About page render in the Outlet of Layout Page
+import Header from "../components/HomePage/Header";
+import { Outlet } from "react-router-dom";
 
+const Layout = () => {
+  return (
+    <div>
+      <Header />
+      <Outlet />
+    </div>
+  );
+};
+
+// routing/router.tsx
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      { path: "/", element: <HomePage /> },
+      { path: "/contact", element: <Contact /> },
+      { path: "/about", element: <About /> },
+    ],
+  },
+]);
+```
+
+### Exercise: Working with Nested Routes
+```jsx
+// UsersPage.tsx as layout, children of this layout render in <Outlet />
+import Header from "../components/HomePage/Header";
+import { Link, Outlet } from "react-router-dom";
+
+const UsersPage = () => {
+  return (
+    <div>
+      <Header />
+      <Link to="/users/1">User 1</Link>
+      <Link to="/users/2">User 2</Link>
+      <Outlet />
+    </div>
+  );
+};
+
+// router.tsx
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      { path: "/", element: <HomePage /> },
+      { path: "/contact", element: <Contact /> },
+      { path: "/about", element: <About /> },
+    ],
+  },
+  {
+    path: "/users",
+    element: <UsersPage />,
+    children: [{ path: ":id", element: <UserDetailsPage /> }],
+  },
+]);
 ```
 
 ```jsx

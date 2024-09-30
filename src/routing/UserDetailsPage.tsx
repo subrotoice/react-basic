@@ -9,16 +9,11 @@ const UserDetailsPage = () => {
 
   // http://localhost:5174/users/1?teacher=subroto
   console.log(params); // 1
-  console.log(searchParams.toString()); // teacher=subroto
-  console.log(searchParams.get("teacher")); // subroto
-  console.log(location); // { "pathname": "/users/1", "search": "?teacher=subroto" ......}
+  // console.log(searchParams.toString()); // teacher=subroto
+  // console.log(searchParams.get("teacher")); // subroto
+  // console.log(location); // { "pathname": "/users/1", "search": "?teacher=subroto" ......}
 
-  return (
-    <div>
-      <Header />
-      UserDetailsPage
-    </div>
-  );
+  return <div>User {params.id} </div>;
 };
 
 export default UserDetailsPage;

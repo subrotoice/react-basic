@@ -10,7 +10,6 @@ import TestStudent from "../components/HomePage/TestStudent";
 const HomePage = () => {
   return (
     <div>
-      <Header />
       <Hero />
       <Footer />
     </div>
