@@ -14,6 +14,9 @@ import MyApp from "./MyApp";
 import PostList from "./react-query/PostList";
 import { RouterProvider } from "react-router-dom";
 import router from "./routing/router";
+import Counter from "./state-management/Counter";
+import TaskList from "./state-management/TaskList";
+import AppStateManagement from "./AppStateManagement";
 
 const queryClient = new QueryClient(); // this line added
 
@@ -22,7 +25,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <QueryClientProvider client={queryClient}>
       {/* <MyApp /> */}
       {/* <PostList /> */}
-      <RouterProvider router={router} />
+      {/* <RouterProvider router={router} /> */}
+      {/* <Counter /> */}
+      <AppStateManagement />
       <ReactQueryDevtools />
     </QueryClientProvider>
 

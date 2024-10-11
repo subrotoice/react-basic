@@ -3378,68 +3378,6 @@ export default {
 <h1 className="text-3xl bg-red-100 font-poppins font-bold">Hello world!</h1>
 ```
 
-### **Understanding useContext Hook | Create - Wrap - Use**
-*createContext() -> MyContext.Provider(value) -> Wrap -> useContext()*
-
-### 1. Create a Context & use it inside a Provider Component | Passing Data
-**Using single Component Version (Create + Wrap)**
-```jsx
-import { createContext } from 'react';
-const ThemeContext = createContext('light');
-
-function App() {
-  const [theme, setTheme] = useState('light');
-  // ...
-  return (
-    <ThemeContext.Provider value={theme}>
-      <Page />
-    </ThemeContext.Provider>
-  );
-}
-```
-
-**Separate component to wrap with | Two Components Step1: Create, Step2: Wrap**
-*Notice: Component name is provider but return context. It's just convension*
-```jsx
-import React, { createContext, useState } from 'react';
-// Create a Context object
-const MyContext = createContext();
-
-const MyProvider = ({ children }) => {
-  const message = "Hello from Context!";
-
-  return (
-    <MyContext.Provider value={{ message }}>
-      {children}
-    </MyContext.Provider>
-  );
-};
-```
-### 2. Wrap your app or the part of the component tree | Wrap App
-
-```jsx
-import React from 'react';
-
-const App = () => {
-  return (
-    <MyProvider>
-      <DisplayMessage />
-    </MyProvider>
-  );
-};
-```
-
-### 3. Access data | useContext(MyContext)
-
-```jsx
-import React, { useContext } from 'react';
-
-const DisplayMessage = () => {
-  const { message } = useContext(MyContext);  // Access the context data
-
-  return <h1>{message}</h1>;
-};
-```
 
 ### **FireBase Authentication**
 [console.firebase.google.com](https://console.firebase.google.com/) 
@@ -3693,17 +3631,547 @@ export const useAuth = () => {
 export default AuthProvider;
 ```
 
+### **Ch-4: State Management**
+
+Reducer: A function that allows us to centralize state updated in a component.
+
+- The useReducer hook in React is useful for handling more complex state logic than useState. It allows you to manage multiple related state values in a more structured way, often mimicking a Redux-like approach.
+- All state management logic encapsulate in one place. Our component is purely responsible for markup.
+
+```jsx
+function reducerFunction(state, action) {
+  // ...
+}
+
+function MyComponent() {
+  const [state, setState] = useState(reducerFunction, initialState); // Same
+  const [state, dispatch] = useReducer(reducerFunction, initialState);
+}
+```
+
+### ABC of useReducer | Counter example
+
+```jsx
+// Step 1: Define the reducer function | (Basic version: we can pass action name as string)
+const counterReducer = (state: number, action: string) => {
+  if (action == "INCREMENT") return state + 1;
+  if (action == "RESET") return 0;
+  return state;
+};
+
+// But it is convension of Action {type: "ActionName"}
+interface Action {
+  type: string;
+}
+
+const counterReducer = (state: number, action: Action) => {
+  if (action.type == "INCREMENT") return state + 1;
+  if (action.type == "RESET") return 0;
+  return state;
+};
+
+// Use counterReducer from a component by button click and dispatch function
+const Counter = () => {
+  // const [value, setValue]=useState(0); // Instade of useState
+  // Step 2: Initialize useReducer with reducer function and initial state
+  const [value, dispatch] = useReducer(counterReducer, 5);
+
+  return (
+    <div>
+      Counter ({value})
+      <p>Count: {state.count}</p>
+      {/* Step 3: Dispatch actions based on user interaction */}
+      <button onClick={() => dispatch({ type: "INCREMENT" })}>Increment</button>
+      <button onClick={() => dispatch({ type: "RESET" })}>Decrement</button>
+    </div>
+  );
+};
+```
+
+### Breakdown:
+
+1. **Reducer Function**: This is where you define how the state should change based on the action dispatched.
+2. **useReducer Hook**: This is used instead of `useState`. It takes in two arguments:
+   - A reducer function.
+   - An initial state.
+3. **Dispatching Actions**: To update the state, you dispatch actions (objects with a `type` key), which the reducer handles to modify the state accordingly.
+
+### Creating complex actions
+
+```jsx
+// TaskList.tsx | Component
+import { useReducer } from "react";
+import taskReducer from "./reducers/tasksReducer";
+
+const TaskList = () => {
+  const [tasks, dispatch] = useReducer(taskReducer, []);
+  return (
+    <div>
+      <button
+        className="btn btn-primary"
+        onClick={() =>
+          dispatch({
+            type: "ADD",
+            task: { taskId: Date.now(), name: "task-" + Date.now() },
+          })
+        }
+      >
+        Add
+      </button>
+      {tasks &&
+        tasks.map((task) => (
+          <p key={task.taskId}>
+            {task.name}{" "}
+            <button
+              onClick={() => dispatch({ type: "DELETE", taskId: task.taskId })}
+              className="btn btn-danger my-1"
+            >
+              Delete
+            </button>
+          </p>
+        ))}
+    </div>
+  );
+};
+```
+```jsx
+// tasksReducer.ts | Tasks reducer function
+interface Task {
+  taskId: number;
+  name: string;
+}
+
+interface AddTask {
+  type: "ADD";
+  task: Task;
+}
+
+interface DeleteTask {
+  type: "DELETE";
+  taskId: number;
+}
+
+type Action = AddTask | DeleteTask;
+
+const taskReducer = (tasks: Task[], action: Action): Task[] => {
+  if (action.type == "ADD") return [action.task, ...tasks];
+  if (action.type == "DELETE")
+    return tasks.filter((task) => task.taskId !== action.taskId);
+
+  return tasks;
+};
+```
+
+### Login Status using useReducer
+
+```jsx
+// Reducer function
+interface LoginAction {
+  type: "LOGIN";
+  userName: string;
+}
+
+interface LogoutAction {
+  type: "LOGOUT";
+}
+
+type AuthAction = LoginAction | LogoutAction;
+
+const loginReducer = (state: string, action: AuthAction) => {
+  if (action.type == "LOGIN") return action.userName;
+  if (action.type == "LOGOUT") return "";
+  return state;
+};
+```
+```jsx
+// LoginStatus.tsx component
+const LoginStatus = () => {
+  const [user, dispatch] = useReducer(loginReducer, "");
+
+  if (user)
+    return (
+      <>
+        {user}
+        <button
+          onClick={() => dispatch({ type: "LOGOUT" })}
+          className="btn btn-primary mx-1"
+        >
+          Logout
+        </button>
+      </>
+    );
+
+  return (
+    <button
+      onClick={() => dispatch({ type: "LOGIN", userName: "Subroto B." })}
+      className="btn btn-primary mx-1"
+    >
+      Login
+    </button>
+  );
+};
+```
+
+## React Context | local -> global state
+- React Context is a track for containing box.
+- A feature that allows you to share values (such as data or functions) across multiple components without the need to pass props down. 
+- Useful for managing global data, such as themes, user information, authentication status, or settings, that need to be accessible by various parts of the app. 
+https://prnt.sc/Id4JQQZ40v0Z
+
+### **Understanding useContext Hook | Create - Wrap - Use**
+*createContext({} | null) -> MyContext.Provider (value) -> Wrap -> useContext()*
+
+### ABC of Context
+**Using single Component Version (Create + Wrap)**
+```jsx
+import { createContext } from 'react';
+const ThemeContext = createContext(''); // null / ''
+
+function App() {
+  const [theme, setTheme] = useState('light');
+  // ...
+  return (
+    <ThemeContext.Provider value={theme}>
+      <Page />
+    </ThemeContext.Provider>
+  );
+}
+```
+## Sharing state using react context
+### 1. Creating TasksContext in TasksContext.ts
+
+```jsx
+// TasksContext.ts
+import { createContext, Dispatch } from "react";
+import { Task, TaskAction } from "../reducers/tasksReducer";
+
+interface TaskContextType {
+  tasks: Task[];
+  dispatch: Dispatch<TaskAction>;
+}
+
+const TasksContext = createContext<TaskContextType>({} as TaskContextType);
+
+export default TasksContext;
+```
+
+### 2. Wrap Component tree where you want to use data and functioin
+
+```jsx
+const AppStateManagement = () => {
+  const [tasks, dispatch] = useReducer(tasksReducer, []); // just for taking data
+  // we can share any more thing
+  return (
+    <TasksContext.Provider value={{ tasks, dispatch }}>
+      <NavBar />
+      <HomePage />
+    </TasksContext.Provider>
+  );
+};
+```
+
+### 3. Access Context data
+
+```jsx
+const TaskList = () => {
+  const { tasks, dispatch } = useContext(TasksContext); // Simple Distructuring
+
+  return (
+    <div>
+      <button
+        className="btn btn-primary"
+        onClick={() =>
+          dispatch({
+            type: "ADD",
+            task: { taskId: Date.now(), name: "task-" + Date.now() },
+          })
+        }
+      >
+        Add
+      </button>
+      {tasks &&
+        tasks.map((task) => (
+          <p key={task.taskId}>
+            {task.name}{" "}
+            <button
+              onClick={() => dispatch({ type: "DELETE", taskId: task.taskId })}
+              className="btn btn-danger my-1"
+            >
+              Delete
+            </button>
+          </p>
+        ))}
+    </div>
+  );
+};
+```
+### Working with useContext(Share data and fn) and useReducer (Central state management)
+**1. Creating taskReducer and authReducer function. It is nothing but using instade of useState**<br />
+**useState and useReducer both are same. Using useReducer have facility of maintaining state from central. Where ui purely concern Markup**
+```jsx
+// taskReducer.ts function
+export interface Task {
+  taskId: number;
+  name: string;
+}
+
+interface AddTask {
+  type: "ADD";
+  task: Task;
+}
+
+interface DeleteTask {
+  type: "DELETE";
+  taskId: number;
+}
+
+export type TaskAction = AddTask | DeleteTask;
+
+const taskReducer = (tasks: Task[], action: TaskAction): Task[] => {
+  if (action.type == "ADD") return [action.task, ...tasks];
+  if (action.type == "DELETE")
+    return tasks.filter((task) => task.taskId !== action.taskId);
+
+  return tasks;
+};
+
+// authReducer.ts function
+interface LoginAction {
+  type: "LOGIN";
+  userName: string;
+}
+
+interface LogoutAction {
+  type: "LOGOUT";
+}
+
+export type AuthAction = LoginAction | LogoutAction;
+
+const authReducer = (state: string, action: AuthAction) => {
+  if (action.type == "LOGIN") return action.userName;
+  if (action.type == "LOGOUT") return "";
+  return state;
+};
+```
+**2. Create TaskContext and AuthContext**
+```jsx
+// AuthContext.ts
+import { createContext, Dispatch } from "react";
+import { AuthAction } from "../reducers/authReducer";
+
+interface AuthContextType {
+  user: string;
+  authDispatch: Dispatch<AuthAction>;
+}
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+
+export default AuthContext;
+
+// TasksContext.ts 
+import { createContext, Dispatch } from "react";
+import { Task, TaskAction } from "../reducers/tasksReducer";
+
+interface TaskContextType {
+  tasks: Task[];
+  dispatch: Dispatch<TaskAction>;
+}
+
+const TasksContext = createContext<TaskContextType>({} as TaskContextType);
+
+export default TasksContext;
+```
+**3. Passing value by wraping component tree** <br />
+**useReducer is nothing but using instade of useState**
+```jsx
+const AppStateManagement = () => {
+  const [tasks, taskDispatch] = useReducer(tasksReducer, []);
+  const [user, authDispatch] = useReducer(authReducer, "");
+
+  return (
+    <AuthContext.Provider value={{ user, authDispatch }}>
+      <TasksContext.Provider value={{ tasks, dispatch: taskDispatch }}>
+        <NavBar />
+        <HomePage />
+      </TasksContext.Provider>
+    </AuthContext.Provider>
+  );
+};
+```
+
+**4. Access context data and fn using useContext**
+```jsx
+import { useContext } from "react";
+import TasksContext from "./contexts/TaskContext";
+import AuthContext from "./contexts/authContext";
+
+const TaskList = () => {
+  const { tasks, dispatch } = useContext(TasksContext);
+  const { user } = useContext(AuthContext);
+
+  return (
+    <div>
+      <button
+        className="btn btn-primary"
+        disabled={user == ""}
+        onClick={() =>
+          dispatch({
+            type: "ADD",
+            task: { taskId: Date.now(), name: "task-" + Date.now() },
+          })
+        }
+      >
+        Add Task
+      </button>
+      {tasks &&
+        tasks.map((task) => (
+          <p key={task.taskId}>
+            {task.name}{" "}
+            <button
+              onClick={() => dispatch({ type: "DELETE", taskId: task.taskId })}
+              className="btn btn-danger my-1"
+            >
+              Delete
+            </button>
+          </p>
+        ))}
+    </div>
+  );
+};
+```
+
+### [Watch using Crome Dev Tool](https://prnt.sc/c-frTNNXeeed)
+
+### Creating a custom provider
+
+```jsx
+// AuthContext.tsx
+import { ReactNode, useContext } from "react";
+import AuthContext from "./contexts/AuthContext";
+interface Props {
+  children: ReactNode;
+}
+const AuthProvider = ({ children }: Props) => {
+  const { user, authDispatch } = useContext(AuthContext);
+
+  return (
+    <AuthContext.Provider value={{ user, authDispatch }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+// AppStateManagement.tsx
+const AppStateManagement = () => {
+  const [tasks, taskDispatch] = useReducer(tasksReducer, []);
+
+  return (
+    <AuthProvider>
+      <TasksContext.Provider value={{ tasks, dispatch: taskDispatch }}>
+        <NavBar />
+        <HomePage />
+      </TasksContext.Provider>
+    </AuthProvider>
+  );
+};
+```
+
+### Createing a hook to access context
+
+```jsx
+// useAuth.ts
+import { useContext } from "react";
+import AuthContext from "../contexts/AuthContext";
+
+const useAuth = () => useContext(AuthContext);
+
+export default useAuth;
+
+// AuthProvider.tsx
+const AuthProvider = ({ children }: Props) => {
+  // const { user, authDispatch } = useContext(AuthContext);
+  const { user, authDispatch } = useAuth();
+}
+```
+
+### Create Provider and useTasks hooks 
+
+```jsx
+// TaskProvider.tsx
+import { ReactNode, useReducer } from "react";
+import TasksContext from "./contexts/TaskContext";
+import taskReducer from "./reducers/tasksReducer";
+
+interface Props {
+  children: ReactNode;
+}
+
+const TasksProvider = ({ children }: Props) => {
+  const [tasks, dispatch] = useReducer(taskReducer, []);
+
+  return (
+    <TasksContext.Provider value={{ tasks, dispatch }}>
+      {children}
+    </TasksContext.Provider>
+  );
+};
+
+export default TasksProvider;
+
+// useTasks.ts
+import { useContext } from "react";
+import TasksContext from "../contexts/TaskContext";
+
+const useTasks = () => useContext(TasksContext);
+
+export default useTasks;
+
+// TaskList.tsx | Using task 
+import useAuth from "./hooks/useAuth";
+import useTasks from "./hooks/useTasks";
+
+const TaskList = () => {
+  // const { tasks, dispatch } = useContext(TasksContext);
+  const { tasks, dispatch } = useTasks();
+  const { user } = useAuth();
+
+  return (
+    <div>
+      <button
+        className="btn btn-primary"
+        disabled={user == ""}
+        onClick={() =>
+          dispatch({
+            type: "ADD",
+            task: { taskId: Date.now(), name: "task-" + Date.now() },
+          })
+        }
+      >
+        Add Task
+      </button>
+      {tasks &&
+        tasks.map((task) => (
+          <p key={task.taskId}>
+            {task.name}{" "}
+            <button
+              onClick={() => dispatch({ type: "DELETE", taskId: task.taskId })}
+              className="btn btn-danger my-1"
+            >
+              Delete
+            </button>
+          </p>
+        ))}
+    </div>
+  );
+};
+```
+**NB: Careful about createContext() and useContext(). Don't use interchangeably**
+
 ###
 
 ```jsx
 
 ```
 
-###
-
-```jsx
-
-```
 
 ###
 
