@@ -14,8 +14,8 @@ import MyApp from "./MyApp";
 import PostList from "./react-query/PostList";
 import { RouterProvider } from "react-router-dom";
 import router from "./routing/router";
-import Counter from "./state-management/Counter";
-import TaskList from "./state-management/TaskList";
+import Counter from "./state-management/counter/Counter";
+import TaskList from "./state-management/tasks/TaskList";
 import AppStateManagement from "./AppStateManagement";
 
 const queryClient = new QueryClient(); // this line added
