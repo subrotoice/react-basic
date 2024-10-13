@@ -4240,25 +4240,81 @@ export { default as TaskList } from "./TaskList";
 ```
 
 
-###
+### When to Use Context and when Redux/Zustand 
+![https://prnt.sc/q_pXVUN43oN4](https://i.postimg.cc/g0GPm454/Screenshot-3.png)
+![https://prnt.sc/0x-ln4znX3wg](https://i.postimg.cc/T11DSVf3/Screenshot-4.png)
 
-```jsx
 
+## Managing Application State with Zustand
+```bash
+npm i zustand@4.3.7
 ```
 
-###
+**Creating store is main deal here then using store**<br>
+create(): Passes callback fn and this fn takes set which is responsible for initializing and updating state.  <br />
+NB: set is convension but we can use set1, myName etc
+
+set(): Used to update the state. <br />
+Update State in two ways: 
+1. An object representing the new state or, 
+2. function that takes the current state as an argument and returns the updated state.
 
 ```jsx
-
+increment: () => set((store) => ({ counter: store.counter + 1 })), // update by returning state
+// increment: () => set({ counter: 3 }), // Update putting object
+reset: () => set(() => ({ counter: 0 })),
+// reset: () => set({ counter: 0 }),
 ```
-
-###
-
 ```jsx
+// counter/store.ts
+import { create } from "zustand";
 
+interface CounterStore {
+  counter: number;
+  increment: () => void;
+  reset: () => void;
+}
+
+const useCounterStore = create<CounterStore>((set) => ({
+  counter: 0, // Initial value
+  increment: () => set((store) => ({ counter: store.counter + 1 })),
+  reset: () => set(() => ({ counter: 0 })),
+}));
+
+export default useCounterStore;
 ```
+**Access state data and fn from a component**
+```jsx
+// counter/Counter.tsx
+import useCounterStore from "./store";
 
-###
+const Counter = () => {
+  // const [value, setValue]=useState(0);
+  // const [value, dispatch] = useReducer(counterReducer, 5);
+  const { counter, increment, reset } = useCounterStore();
+  return (
+    <div>
+      Counter ({counter})
+      <button className="btn btn-primary mx-1" onClick={() => increment()}>
+        Increment
+      </button>
+      <button className="btn btn-primary mx-1" onClick={() => reset()}>
+        Reset
+      </button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+NB: With this implementation all the logic for managing state in a single place.
+1. Don't need context
+2. Don't need provider to wrap our component tree.
+3. Don't need custome hook
+4. Don't need reducer
+5. Don't need any redux nonsense
+
+### Preventing Unecessary Renders
 
 ```jsx
 

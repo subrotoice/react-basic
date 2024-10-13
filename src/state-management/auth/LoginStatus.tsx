@@ -1,17 +1,17 @@
-import { useContext } from "react";
-import { AuthContext } from "./AuthProvider";
+import useCounterStore from "../counter/store";
+import useAuthStore from "./store";
 
 const LoginStatus = () => {
-  const { user, dispatch: authDispatch } = useContext(AuthContext);
+  // const { user, dispatch: authDispatch } = useContext(AuthContext);
+  const { user, login, logout } = useAuthStore();
+  const { counter } = useCounterStore();
 
   if (user)
     return (
       <>
+        Count: {counter}
         {user}
-        <button
-          onClick={() => authDispatch({ type: "LOGOUT" })}
-          className="btn btn-primary mx-1"
-        >
+        <button onClick={() => logout()} className="btn btn-primary mx-1">
           Logout
         </button>
       </>
@@ -19,7 +19,7 @@ const LoginStatus = () => {
 
   return (
     <button
-      onClick={() => authDispatch({ type: "LOGIN", userName: "Subroto B." })}
+      onClick={() => login("Mr. Biswas")}
       className="btn btn-primary mx-1"
     >
       Login
