@@ -1,25 +1,11 @@
-import ListGroup from "./components/ListGroup/ListGroup";
-import ChildrenCom from "./components/ChildrenCom";
-import Button from "./components/Button/Button";
-import Alert from "./components/Alert";
-import { useState } from "react";
-import { BsFillCalendarFill } from "react-icons/bs";
-import Like from "./components/Like";
-import Message from "./components/Message";
-import NavBar from "./components/NavBar";
-import Cart from "./components/Cart";
-import ExpandableText from "./components/ExpandableText";
 import "bootstrap/dist/css/bootstrap.css";
-import "./index.css";
-import Form from "./components/Form";
-import ExpenseList from "./components/expense-tracker/components/ExpenseList";
+import { useState } from "react";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import ExpenseFilter from "./components/expense-tracker/components/ExpenseFilter";
+import ExpenseList from "./components/expense-tracker/components/ExpenseList";
 import ExpensesForm from "./components/expense-tracker/components/ExpensesForm";
-import Person from "./components/Perosn";
 import "./components/my-style.css";
-import { BsFillCalculatorFill, BsFillBadge4KFill } from "react-icons/bs";
-import { AiFillApple } from "react-icons/ai";
-import { AiFillHeart, AiTwotoneHeart, AiOutlineHeart } from "react-icons/ai";
+import "./index.css";
 
 function App() {
   const items = [

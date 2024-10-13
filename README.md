@@ -3631,7 +3631,7 @@ export const useAuth = () => {
 export default AuthProvider;
 ```
 
-### **Ch-4: State Management**
+### **Ch-4: State Management useing Reducer & Context**
 
 Reducer: A function that allows us to centralize state updated in a component.
 
@@ -4040,7 +4040,7 @@ const TaskList = () => {
 ```
 
 ### [Watch using Crome Dev Tool](https://prnt.sc/c-frTNNXeeed)
-
+Breakdown: ThemeContext: Created using createContext(). ThemeProvider: A wrapper that uses the Provider component to provide the theme value. useContext(ThemeContext):  access value without passing prop.
 ### Creating a custom provider
 
 ```jsx

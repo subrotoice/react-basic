@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { FormEvent, useState } from "react";
 
 const LabTest = () => {
-  function getFormData(e) {
+  function getFormData(e: FormEvent) {
     e.preventDefault();
     console.log(name, car, confirmation);
   }
