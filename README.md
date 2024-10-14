@@ -4244,7 +4244,7 @@ export { default as TaskList } from "./TaskList";
 ![https://prnt.sc/q_pXVUN43oN4](https://i.postimg.cc/g0GPm454/Screenshot-3.png)
 ![https://prnt.sc/0x-ln4znX3wg](https://i.postimg.cc/T11DSVf3/Screenshot-4.png)
 
-
+---
 ## Managing Application State with Zustand
 ```bash
 npm i zustand@4.3.7
@@ -4315,7 +4315,88 @@ NB: With this implementation all the logic for managing state in a single place.
 5. Don't need any redux nonsense
 
 ### Preventing Unecessary Renders
+**Here log in console only when click on Increment buton, not reset button.**<br>
+**useCounterStore() => useCounterStore((s) => s.counter)**
+```jsx
+// LoginStatus.tsx
+const LoginStatus = () => {
+  // const { counter } = useCounterStore();
+  const counter = useCounterStore((s) => s.counter);
 
+  console.log("From Login Status"); // 
+
+  if (user)
+    return (
+      <>
+        Count: {counter}
+        {user}
+        <button onClick={() => logout()} className="btn btn-primary mx-1">
+          Logout
+        </button>
+      </>
+    );
+
+  return (
+    <button
+      onClick={() => login("Mr. Biswas")}
+      className="btn btn-primary mx-1"
+    >
+      Login
+    </button>
+  );
+};
+```
+
+### [simple-zustand-devtools](https://www.npmjs.com/package/simple-zustand-devtools)
+```bash
+npm i simple-zustand-devtools
+npm i -D @types/node // for node type for typescript
+```
+```jsx
+import { mountStoreDevtool } from "simple-zustand-devtools";
+import { create } from "zustand";
+
+interface CounterStore {
+  counter: number;
+  max: number;
+  increment: () => void;
+  reset: () => void;
+}
+
+const useCounterStore = create<CounterStore>((set) => ({
+  counter: 0,
+  max: 5,
+  increment: () => set((store) => ({ counter: store.counter + 1 })),
+  reset: () => set(() => ({ max: 10 })),
+}));
+
+if (process.env.NODE_ENV == "development")
+  mountStoreDevtool("Counter Store", useCounterStore);
+
+```
+![https://prnt.sc/mRbxgdHDsuLW](https://i.postimg.cc/VNNN2RcC/devt.png)
+
+### 
+```jsx
+
+```
+
+### 
+```jsx
+
+```
+
+### 
+```jsx
+
+```
+
+### 
+```jsx
+
+```
+
+### 
 ```jsx
 
 ```

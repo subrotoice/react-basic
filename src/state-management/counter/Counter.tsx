@@ -5,7 +5,7 @@ const Counter = () => {
   // const [value, dispatch] = useReducer(counterReducer, 5);
   const { counter, increment, reset } = useCounterStore();
 
-  console.log("Counter Rerender from Counter.tsx");
+  // console.log("Counter Rerender from Counter.tsx");
 
   return (
     <div>
