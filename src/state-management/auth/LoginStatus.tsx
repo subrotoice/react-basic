@@ -4,7 +4,9 @@ import useAuthStore from "./store";
 const LoginStatus = () => {
   // const { user, dispatch: authDispatch } = useContext(AuthContext);
   const { user, login, logout } = useAuthStore();
-  const { counter } = useCounterStore();
+  // const { counter } = useCounterStore();
+  const counter = useCounterStore((s) => s.counter);
+  console.log("From Login Status");
 
   if (user)
     return (
