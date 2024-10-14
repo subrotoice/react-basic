@@ -2983,7 +2983,9 @@ export default usePosts;
 ```bash
 npm install react-router-dom
 ```
+
 **Standard folder structure for a React application using React Router**
+
 ```bash
 /my-react-app
 │
@@ -3168,7 +3170,9 @@ const router = createBrowserRouter([
   },
 ]);
 ```
+
 Another Example of nested layout
+
 ```tsx
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
@@ -3200,7 +3204,7 @@ const UsersPage = () => {
   );
 };
 
-// router.tsx 
+// router.tsx
 const router = createBrowserRouter([
   {
     path: "/",
@@ -3354,10 +3358,13 @@ const router = createBrowserRouter([
 ```
 
 ### **Install google fonts in Tailwind**
+
 1. [fonts.google.com/specimen/Poppins](https://fonts.google.com/specimen/Poppins)
 2. Get Font -> Embed Code -> @Import
-  - Put that import link in the top of main.tsx
-3. tailwind.config.js 
+
+- Put that import link in the top of main.tsx
+
+3. tailwind.config.js
 
 ```javascript
 /** @type {import('tailwindcss').Config} */
@@ -3374,23 +3381,29 @@ export default {
   plugins: [require("daisyui")],
 };
 ```
+
 ```jsx
 <h1 className="text-3xl bg-red-100 font-poppins font-bold">Hello world!</h1>
 ```
 
-
 ### **FireBase Authentication**
-[console.firebase.google.com](https://console.firebase.google.com/) 
+
+[console.firebase.google.com](https://console.firebase.google.com/)
 [firebase.google.com/docs](https://firebase.google.com/docs/auth/web/password-auth)
+
 ---
+
 ![https://prnt.sc/fsXVGe4dnPqR](https://i.ibb.co.com/QFgVDrK/Screenshot-1.png)
 ![https://prnt.sc/wtsmLCMtWBWx](https://i.ibb.co.com/mysgxS1/Screenshot-2.png)
 
 Install FireBase
+
 ```bash
 npm install firebase
 ```
+
 **A simple firebase example which is responsible for createing new user using email and Password and Update profile with name and photo**
+
 ```jsx
 // Import necessary modules
 import { initializeApp } from "firebase/app";
@@ -3424,6 +3437,7 @@ const Register = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     const auth = getAuth();
+    // const auth = getAuth(app); // use from different module/file
 
     try {
       // Create user with email and password
@@ -3486,13 +3500,16 @@ const Register = () => {
 
 export default Register;
 ```
+
 **In Multiple file: Productoin gread**
+
 - FireBase configuration
+
 ```javascript
-// firebase/firebaseConfig.ts 
+// firebase/firebaseConfig.ts
+// Import the necessary functions from Firebase SDK (v9 Modular Syntax)
 // Import the necessary functions from Firebase SDK (v9 Modular Syntax)
 import { initializeApp } from "firebase/app";
-import { getAuth, GithubAuthProvider, GoogleAuthProvider } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -3505,19 +3522,27 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
-// Export Firebase Auth and Google Auth Provider
-export const authFirebase = getAuth(); // Get Firebase Auth instance
-
-// Initialize Google and GitHub providers
-export const googleProvider = new GoogleAuthProvider();
-export const githubProvider = new GithubAuthProvider();
+export default app;
 ```
 
 **Export: Provider - return: Context**
+
 ```jsx
 // context/AuthContext.tsx
+import {
+  createUserWithEmailAndPassword,
+  User as FirebaseUser,
+  getAuth,
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  updateProfile,
+  UserCredential,
+} from "firebase/auth";
 import {
   createContext,
   ReactNode,
@@ -3525,9 +3550,11 @@ import {
   useEffect,
   useState,
 } from "react";
+import app from "../firebase/firebaseConfig";
 
 // Export Firebase Auth and Google Auth Provider
-const auth = getAuth(); // Get Firebase Auth instance
+// const auth = getAuth(); // Useing from same moule
+const auth = getAuth(app); // Get Firebase Auth instance
 
 // Initialize Google and GitHub providers
 const googleProvider = new GoogleAuthProvider();
@@ -3552,11 +3579,11 @@ interface AuthContextType {
 }
 
 // 2. Create the AuthContext with an undefined default
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = (createContext < AuthContextType) | (undefined > undefined);
 
 // 3. AuthProvider component that wraps the entire app
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [user, setUser] = (useState < FirebaseUser) | (null > null);
   const [loading, setLoading] = useState(true);
 
   // Monitor the Firebase auth state and set the user
@@ -3678,8 +3705,7 @@ const Counter = () => {
 
   return (
     <div>
-      Counter ({value})
-      <p>Count: {state.count}</p>
+      Counter ({value})<p>Count: {state.count}</p>
       {/* Step 3: Dispatch actions based on user interaction */}
       <button onClick={() => dispatch({ type: "INCREMENT" })}>Increment</button>
       <button onClick={() => dispatch({ type: "RESET" })}>Decrement</button>
@@ -3734,6 +3760,7 @@ const TaskList = () => {
   );
 };
 ```
+
 ```jsx
 // tasksReducer.ts | Tasks reducer function
 interface Task {
@@ -3783,6 +3810,7 @@ const loginReducer = (state: string, action: AuthAction) => {
   return state;
 };
 ```
+
 ```jsx
 // LoginStatus.tsx component
 const LoginStatus = () => {
@@ -3813,22 +3841,26 @@ const LoginStatus = () => {
 ```
 
 ## React Context | local -> global state
+
 - React Context is a track for containing box.
-- A feature that allows you to share values (such as data or functions) across multiple components without the need to pass props down. 
-- Useful for managing global data, such as themes, user information, authentication status, or settings, that need to be accessible by various parts of the app. 
-https://prnt.sc/Id4JQQZ40v0Z
+- A feature that allows you to share values (such as data or functions) across multiple components without the need to pass props down.
+- Useful for managing global data, such as themes, user information, authentication status, or settings, that need to be accessible by various parts of the app.
+  https://prnt.sc/Id4JQQZ40v0Z
 
 ### **Understanding useContext Hook | Create - Wrap - Use**
-*createContext({} | null) -> MyContext.Provider (value) -> Wrap -> useContext()*
+
+_createContext({} | null) -> MyContext.Provider (value) -> Wrap -> useContext()_
 
 ### ABC of Context
+
 **Using single Component Version (Create + Wrap)**
+
 ```jsx
-import { createContext } from 'react';
-const ThemeContext = createContext(''); // null / ''
+import { createContext } from "react";
+const ThemeContext = createContext(""); // null / ''
 
 function App() {
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState("light");
   // ...
   return (
     <ThemeContext.Provider value={theme}>
@@ -3837,7 +3869,9 @@ function App() {
   );
 }
 ```
+
 ## Sharing state using react context
+
 ### 1. Creating TasksContext in TasksContext.ts
 
 ```jsx
@@ -3905,9 +3939,12 @@ const TaskList = () => {
   );
 };
 ```
+
 ### Working with useContext(Share data and fn) and useReducer (Central state management)
+
 **1. Creating taskReducer and authReducer function. It is nothing but using instade of useState**<br />
 **useState and useReducer both are same. Using useReducer have facility of maintaining state from central. Where ui purely concern Markup**
+
 ```jsx
 // taskReducer.ts function
 export interface Task {
@@ -3953,7 +3990,9 @@ const authReducer = (state: string, action: AuthAction) => {
   return state;
 };
 ```
+
 **2. Create TaskContext and AuthContext**
+
 ```jsx
 // AuthContext.ts
 import { createContext, Dispatch } from "react";
@@ -3967,7 +4006,7 @@ const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export default AuthContext;
 
-// TasksContext.ts 
+// TasksContext.ts
 import { createContext, Dispatch } from "react";
 import { Task, TaskAction } from "../reducers/tasksReducer";
 
@@ -3980,8 +4019,10 @@ const TasksContext = createContext<TaskContextType>({} as TaskContextType);
 
 export default TasksContext;
 ```
+
 **3. Passing value by wraping component tree** <br />
 **useReducer is nothing but using instade of useState**
+
 ```jsx
 const AppStateManagement = () => {
   const [tasks, taskDispatch] = useReducer(tasksReducer, []);
@@ -3999,6 +4040,7 @@ const AppStateManagement = () => {
 ```
 
 **4. Access context data and fn using useContext**
+
 ```jsx
 import { useContext } from "react";
 import TasksContext from "./contexts/TaskContext";
@@ -4040,7 +4082,9 @@ const TaskList = () => {
 ```
 
 ### [Watch using Crome Dev Tool](https://prnt.sc/c-frTNNXeeed)
-Breakdown: ThemeContext: Created using createContext(). ThemeProvider: A wrapper that uses the Provider component to provide the theme value. useContext(ThemeContext):  access value without passing prop.
+
+Breakdown: ThemeContext: Created using createContext(). ThemeProvider: A wrapper that uses the Provider component to provide the theme value. useContext(ThemeContext): access value without passing prop.
+
 ### Creating a custom provider
 
 ```jsx
@@ -4090,10 +4134,10 @@ export default useAuth;
 const AuthProvider = ({ children }: Props) => {
   // const { user, authDispatch } = useContext(AuthContext);
   const { user, authDispatch } = useAuth();
-}
+};
 ```
 
-### Create Provider and useTasks hooks 
+### Create Provider and useTasks hooks
 
 ```jsx
 // TaskProvider.tsx
@@ -4125,7 +4169,7 @@ const useTasks = () => useContext(TasksContext);
 
 export default useTasks;
 
-// TaskList.tsx | Using task 
+// TaskList.tsx | Using task
 import useAuth from "./hooks/useAuth";
 import useTasks from "./hooks/useTasks";
 
@@ -4164,11 +4208,13 @@ const TaskList = () => {
   );
 };
 ```
+
 **NB: Careful about createContext() and useContext(). Don't use interchangeably**
 
 ### **Organize code for Scaleablity and Maintainability**
+
 - Move file all realated to task to task folder. So that if we change anything in task folder will not affected.
-![https://prnt.sc/0IAp-iW3EaM-](https://i.postimg.cc/437mvL8w/Screenshot-1.png)
+  ![https://prnt.sc/0IAp-iW3EaM-](https://i.postimg.cc/437mvL8w/Screenshot-1.png)
 - Here all implemetational details is not exposed.
 
 ```jsx
@@ -4239,24 +4285,27 @@ export { default as TasksProvider } from "./TasksProvider";
 export { default as TaskList } from "./TaskList";
 ```
 
+### When to Use Context and when Redux/Zustand
 
-### When to Use Context and when Redux/Zustand 
 ![https://prnt.sc/q_pXVUN43oN4](https://i.postimg.cc/g0GPm454/Screenshot-3.png)
 ![https://prnt.sc/0x-ln4znX3wg](https://i.postimg.cc/T11DSVf3/Screenshot-4.png)
 
+---
 
 ## Managing Application State with Zustand
+
 ```bash
 npm i zustand@4.3.7
 ```
 
 **Creating store is main deal here then using store**<br>
-create(): Passes callback fn and this fn takes set which is responsible for initializing and updating state.  <br />
+create(): Passes callback fn and this fn takes set which is responsible for initializing and updating state. <br />
 NB: set is convension but we can use set1, myName etc
 
 set(): Used to update the state. <br />
-Update State in two ways: 
-1. An object representing the new state or, 
+Update State in two ways:
+
+1. An object representing the new state or,
 2. function that takes the current state as an argument and returns the updated state.
 
 ```jsx
@@ -4265,6 +4314,7 @@ increment: () => set((store) => ({ counter: store.counter + 1 })), // update by 
 reset: () => set(() => ({ counter: 0 })),
 // reset: () => set({ counter: 0 }),
 ```
+
 ```jsx
 // counter/store.ts
 import { create } from "zustand";
@@ -4275,15 +4325,20 @@ interface CounterStore {
   reset: () => void;
 }
 
-const useCounterStore = create<CounterStore>((set) => ({
-  counter: 0, // Initial value
-  increment: () => set((store) => ({ counter: store.counter + 1 })),
-  reset: () => set(() => ({ counter: 0 })),
-}));
+const useCounterStore =
+  create <
+  CounterStore >
+  ((set) => ({
+    counter: 0, // Initial value
+    increment: () => set((store) => ({ counter: store.counter + 1 })),
+    reset: () => set(() => ({ counter: 0 })),
+  }));
 
 export default useCounterStore;
 ```
+
 **Access state data and fn from a component**
+
 ```jsx
 // counter/Counter.tsx
 import useCounterStore from "./store";
@@ -4307,7 +4362,9 @@ const Counter = () => {
 
 export default Counter;
 ```
+
 NB: With this implementation all the logic for managing state in a single place.
+
 1. Don't need context
 2. Don't need provider to wrap our component tree.
 3. Don't need custome hook
@@ -4315,6 +4372,99 @@ NB: With this implementation all the logic for managing state in a single place.
 5. Don't need any redux nonsense
 
 ### Preventing Unecessary Renders
+
+**Here log in console only when click on Increment buton, not reset button.**<br>
+**useCounterStore() => useCounterStore((s) => s.counter)**
+
+```jsx
+// LoginStatus.tsx
+const LoginStatus = () => {
+  // const { counter } = useCounterStore();
+  const counter = useCounterStore((s) => s.counter);
+
+  console.log("From Login Status"); //
+
+  if (user)
+    return (
+      <>
+        Count: {counter}
+        {user}
+        <button onClick={() => logout()} className="btn btn-primary mx-1">
+          Logout
+        </button>
+      </>
+    );
+
+  return (
+    <button
+      onClick={() => login("Mr. Biswas")}
+      className="btn btn-primary mx-1"
+    >
+      Login
+    </button>
+  );
+};
+```
+
+### [simple-zustand-devtools](https://www.npmjs.com/package/simple-zustand-devtools)
+
+```bash
+npm i simple-zustand-devtools
+npm i -D @types/node // for node type for typescript
+```
+
+```jsx
+import { mountStoreDevtool } from "simple-zustand-devtools";
+import { create } from "zustand";
+
+interface CounterStore {
+  counter: number;
+  max: number;
+  increment: () => void;
+  reset: () => void;
+}
+
+const useCounterStore =
+  create <
+  CounterStore >
+  ((set) => ({
+    counter: 0,
+    max: 5,
+    increment: () => set((store) => ({ counter: store.counter + 1 })),
+    reset: () => set(() => ({ max: 10 })),
+  }));
+
+if (process.env.NODE_ENV == "development")
+  mountStoreDevtool("Counter Store", useCounterStore);
+```
+
+![https://prnt.sc/mRbxgdHDsuLW](https://i.postimg.cc/VNNN2RcC/devt.png)
+
+###
+
+```jsx
+
+```
+
+###
+
+```jsx
+
+```
+
+###
+
+```jsx
+
+```
+
+###
+
+```jsx
+
+```
+
+###
 
 ```jsx
 
